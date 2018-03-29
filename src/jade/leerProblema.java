@@ -1,31 +1,66 @@
 package jade;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
+
+/**
+ * Clase leerProblema
+ * Lee un archivo con la información del problema multicriterio y la almacena en 
+ * una estructura valida.
+ * @author Ivan Garcia Campos   alu0100693737@ull.edu.es
+ * @version 1.0, 29/03/2018
+ * Asignatura "Sistemas Inteligentes Avanzados"
+ * Master en Ingeniería Informática por la ULL
+ */
 
 public class leerProblema {
 
+	/*
+	 * Numero de alternativas para el decisor
+	 */
 	private int numAlternativas_;
+	/*
+	 * Numero de criterios a tener en cuenta
+	 */
 	private int numCriterios_;
+	/*
+	 * Array con los nombres de los criterios, parametro no obligatorio
+	 */
 	private ArrayList<String> nombreAtributos_;
-	private ArrayList<Boolean> maxminAtributos_; //1 para max, 0 para min
+	/*
+	 * Array que indica que criterio debe maximizarse y cual minimizarse (1 para max, 0 para min)
+	 */
+	private ArrayList<Boolean> maxminAtributos_;
+	/*
+	 * Array con los valores de todos los criterios para todas las alternativas 
+	 */
 	private ArrayList<ArrayList<Float>> valoresAtributos_;
 
+	/*
+	 * Constructor de la clase, lee el fichero y lo muestra
+	 * @param archivo		Archivo a analizar
+	 * @throws IllegalArgumentException, Exception si algun dato del fichero es incorrecto, sobra o falta elemento.
+	 */
 	public leerProblema(String archivo) throws IllegalArgumentException, Exception {
+		numAlternativas_ = 0;
+		numCriterios_ = 0;
 		maxminAtributos_ = new ArrayList<Boolean>();
 		valoresAtributos_ = new ArrayList<ArrayList<Float>>();
 
 		leerFichero(archivo);
-
 		showFichero();
 	}
 
+	/*
+	 * Método que lee el fichero especificado por parametro
+	 * @param archivo		Archivo a analizar
+	 * @throws IllegalArgumentException, Exception si algun dato del fichero es incorrecto, sobra o falta elemento.
+	 */
 	private void leerFichero(String archivo)  throws IllegalArgumentException, Exception{
 		String cadena;
 		BufferedReader b = null;
+
 		try {
 			FileReader f = new FileReader(archivo);
 			b = new BufferedReader(f);
@@ -95,29 +130,39 @@ public class leerProblema {
 		}
 	}
 
-
+	/*
+	 * Metodo que muestra el fichero del problema multicriterio
+	 */
 	public void showFichero() {
-		System.out.println("Fichero de entrada: ");
-		System.out.println(getNumAlternativas() + " " + getNumCriterios());
-		if(getArrayNombreAtributos().size() > 0) {
-			for(int i = 0; i < getArrayNombreAtributos().size(); i++) {
-				System.out.print(getArrayNombreAtributos().get(i) + " ");
+		if(getNumAlternativas() == 0) {
+			System.out.println("Fichero aun no leido, esta condicion no deberia ocurrir");
+		} else {
+			System.out.println("Fichero de entrada: ");
+			System.out.println(getNumAlternativas() + " " + getNumCriterios());
+			if(getArrayNombreAtributos().size() > 0) {
+				for(int i = 0; i < getArrayNombreAtributos().size(); i++) {
+					System.out.print(getArrayNombreAtributos().get(i) + " ");
+				}
+				System.out.println();
+			}
+
+			for(int i = 0; i < getArrayMaxMinAtributos().size(); i++) {
+				System.out.print(getArrayMaxMinAtributos().get(i) + " ");
 			}
 			System.out.println();
-		}
 
-		for(int i = 0; i < getArrayMaxMinAtributos().size(); i++) {
-			System.out.print(getArrayMaxMinAtributos().get(i) + " ");
-		}
-		System.out.println();
-
-		for(int i = 0; i < getArrayValoresAtributos().size(); i++) {
-			for(int j = 0; j < getNumCriterios(); j++) 
-				System.out.print(getArrayValoresAtributos().get(i).get(j) + " ");
-			System.out.println();
+			for(int i = 0; i < getArrayValoresAtributos().size(); i++) {
+				for(int j = 0; j < getNumCriterios(); j++) 
+					System.out.print(getArrayValoresAtributos().get(i).get(j) + " ");
+				System.out.println();
+			}
 		}
 	}
 
+	/*
+	 * Metodo que cambia un entero 0 o 1 en false y true, tipo C++
+	 * @return static boolean
+	 */
 	public static boolean intToBool(int input) throws Exception {
 		if (input < 0 || input > 1) {
 			throw new Exception("input must be 0 or 1");
@@ -127,35 +172,66 @@ public class leerProblema {
 		return input == 1;
 	}
 
+	/*
+	 * Metodo que devuelve el numero de alternativas del problema
+	 * @return int
+	 */
 	public int getNumAlternativas() {
 		return numAlternativas_;
 	}
 
+	/*
+	 * Metodo que asigna el valor del numero de alternativas
+	 * @param valor
+	 */
 	public void setNumAlternativas(int valor) {
 		numAlternativas_ = valor;
 	}
 
+	/*
+	 * Metodo que devuelve el numero de criterios del problema
+	 * @return int
+	 */
 	public int getNumCriterios() {
 		return numCriterios_;
 	}
 
+	/*
+	 * Metodo que asigna el valor del numero de criterios del problema
+	 */
 	public void setNumCriterios(int valor) {
 		numCriterios_ = valor;
 	}
 
+	/*
+	 * Metodo que devuelve el array con los nombres de los atributos/criterios a medir
+	 * @return ArrayList<String>
+	 */
 	public ArrayList<String> getArrayNombreAtributos() {
 		return nombreAtributos_;
 	}
 
+	/*
+	 * Metodo que devuelve el array que indica que criterio debe maximizarse o minimizarse
+	 * @return ArrayList<Boolean>
+	 */
 	public ArrayList<Boolean> getArrayMaxMinAtributos() {
 		return maxminAtributos_;
 	}
 
+	/*
+	 * Metodo que devuelve el array con los valores de cada uno de los atributos
+	 * @return ArrayList<ArrayList<Float>
+	 */
 	public ArrayList<ArrayList<Float>> getArrayValoresAtributos() {
 		return valoresAtributos_;
 	}
 
-	public void setArrayValoresAtributo(ArrayList valores) {
+	/*
+	 * Metodo que añade los valores de un determinado criterio/atributo al array de atributos/criterios
+	 * @param ArrayList<Float> 
+	 */
+	public void setArrayValoresAtributo(ArrayList<Float> valores) {
 		getArrayValoresAtributos().add(valores);
 	}
 }
