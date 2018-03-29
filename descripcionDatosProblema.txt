@@ -1,0 +1,7 @@
+4 6 1 //alternativas, atributos 1 si tiene descripcion, 0 datos directos 
+velMax distDespegue cargaMax precio fiabilidad manejo
+1 0 1 0 1 1 //segunda linea max(1) o min(0)
+2.0 1.5 2.0 5.5 5 9
+2.5 2.7 1.8 6.5 3 5
+1.8 2.0 2.1 4.5 7 7
+2.2 1.8 2.0 5.0 5 5
