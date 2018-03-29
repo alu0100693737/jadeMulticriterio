@@ -15,11 +15,11 @@ public class importanciaRelativaIndividual {
 	/**
 	 * Nombre del usuario
 	 */
-	private String nombre_;
+	private String nombre;
 	/**
 	 * Conjunto de ponderaciones, importancia
 	 */
-	ArrayList<Float> importancias_;
+	ArrayList<Float> importancias;
 	
 	/**
 	 * Constructor de la clase importanciaRelativaIndividual
@@ -27,7 +27,7 @@ public class importanciaRelativaIndividual {
 	 * @param tamanoCorrecto 	Numero de atributos/criterios del problema. Comprobación fichero correcto
 	 */
 	public importanciaRelativaIndividual(String datos, int tamanoCorrecto) {
-		importancias_ = new ArrayList<Float>();
+		importancias = new ArrayList<Float>();
 		leerImportancia(datos, tamanoCorrecto);
 	}
 	
@@ -41,16 +41,18 @@ public class importanciaRelativaIndividual {
 		//La suma de las ponderaciones debe ser 1. Ej: 0.2 + 0.1 + 0.1 + 0.1 + 0.2 + 0.3
 		float comprobacionSuma = 0;
 		
-		nombre_ = splited[0];
+		nombre = splited[0];
 		for(int i = 1; i < splited.length; i++) {
 			comprobacionSuma += Float.parseFloat(splited[i]);
 			getImportancias().add(Float.parseFloat(splited[i]));
 		}
-		if(getImportancias().size() != (tamanoCorrecto + 1)) {
+		if(getImportancias().size() != (tamanoCorrecto)) {
+			System.out.println("Tamano a " + getImportancias().size() + " " + tamanoCorrecto);
 			System.err.println("Error en el fichero de importancias relativas, faltan atributos por ponderar");
 			return;
 		} else if (comprobacionSuma != 1.0f) {
-			System.err.println("Ponderaciones incorrectas, fichero mal estructurado");
+			System.out.println(nombre);
+			System.err.println("Ponderaciones incorrectas, fichero mal estructurado, nombre: " + nombre);
 			return;
 		}
 	}
@@ -71,7 +73,7 @@ public class importanciaRelativaIndividual {
 	 * @return nombre_
 	 */
 	public String getNombre() {
-		return nombre_;
+		return nombre;
 	}
 	
 	/**
@@ -79,6 +81,6 @@ public class importanciaRelativaIndividual {
 	 * @return
 	 */
 	public ArrayList<Float> getImportancias() {
-		return importancias_;
+		return importancias;
 	}
 }

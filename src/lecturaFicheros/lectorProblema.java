@@ -28,34 +28,34 @@ public class lectorProblema {
 	/**
 	 * Numero de alternativas para el decisor
 	 */
-	private int numAlternativas_;
+	private int numAlternativas;
 	/**
 	 * Numero de criterios a tener en cuenta
 	 */
-	private int numCriterios_;
+	private int numCriterios;
 	/**
 	 * Array con los nombres de los criterios, parametro no obligatorio
 	 */
-	private ArrayList<String> nombreAtributos_;
+	private ArrayList<String> nombreAtributos;
 	/**
 	 * Array que indica que criterio debe maximizarse y cual minimizarse (1 para max, 0 para min)
 	 */
-	private ArrayList<Boolean> maxminAtributos_;
+	private ArrayList<Boolean> maxminAtributos;
 	/**
 	 * Array con los valores de todos los criterios para todas las alternativas 
 	 */
-	private ArrayList<ArrayList<Float>> valoresAtributos_;
+	private ArrayList<ArrayList<Float>> valoresAtributos;
 
 	/**
 	 * Constructor de la clase, lee el fichero y lo muestra
 	 * @param archivo		Archivo a analizar
 	 * @throws IllegalArgumentException, Exception si algun dato del fichero es incorrecto, sobra o falta elemento.
 	 */
-	public lectorProblema(String archivo) throws IllegalArgumentException, Exception {
-		numAlternativas_ = 0;
-		numCriterios_ = 0;
-		maxminAtributos_ = new ArrayList<Boolean>();
-		valoresAtributos_ = new ArrayList<ArrayList<Float>>();
+	public lectorProblema(String archivo) throws Exception {
+		numAlternativas = 0;
+		numCriterios = 0;
+		maxminAtributos = new ArrayList<Boolean>();
+		valoresAtributos = new ArrayList<ArrayList<Float>>();
 
 		leerFichero(archivo);
 		showFichero();
@@ -66,7 +66,7 @@ public class lectorProblema {
 	 * @param archivo		Archivo a analizar
 	 * @throws IllegalArgumentException, Exception si algun dato del fichero es incorrecto, sobra o falta elemento.
 	 */
-	private void leerFichero(String archivo)  throws IllegalArgumentException, Exception {
+	private void leerFichero(String archivo)  throws Exception {
 		String cadena;
 		BufferedReader b = null;
 
@@ -84,7 +84,7 @@ public class lectorProblema {
 
 				//Existe nombre para los atributos del problema
 				if(Integer.parseInt(splited[2]) == 1) {
-					nombreAtributos_ = new ArrayList<String>();
+					nombreAtributos = new ArrayList<String>();
 
 					cadena = b.readLine();
 					splited = cadena.split("\\s+");
@@ -109,7 +109,7 @@ public class lectorProblema {
 			if(splited.length == getNumCriterios()) 
 				for(int i = 0; i < getNumCriterios(); i++) 
 					getArrayMaxMinAtributos().add(intToBool(Integer.parseInt(splited[i])));
-	
+
 			else {
 				System.err.println("Error en el fichero, la linea de atributos debe tener el mismo lenght que se indica en la primera linea");
 				b.close();
@@ -145,7 +145,7 @@ public class lectorProblema {
 		if(getNumAlternativas() == 0) {
 			System.out.println("Fichero aun no leido, esta condicion no deberia ocurrir");
 		} else {
-			System.out.println("Fichero de entrada: ");
+			System.out.println("\nFichero de entrada: ");
 			System.out.print(getNumAlternativas() + " " + getNumCriterios());
 			if(getArrayNombreAtributos().size() > 0) {
 				System.out.println(" 1");
@@ -186,7 +186,7 @@ public class lectorProblema {
 	 * @return int
 	 */
 	public int getNumAlternativas() {
-		return numAlternativas_;
+		return numAlternativas;
 	}
 
 	/**
@@ -194,7 +194,7 @@ public class lectorProblema {
 	 * @param valor
 	 */
 	public void setNumAlternativas(int valor) {
-		numAlternativas_ = valor;
+		numAlternativas = valor;
 	}
 
 	/**
@@ -202,14 +202,14 @@ public class lectorProblema {
 	 * @return int
 	 */
 	public int getNumCriterios() {
-		return numCriterios_;
+		return numCriterios;
 	}
 
 	/**
 	 * Metodo que asigna el valor del numero de criterios del problema
 	 */
 	public void setNumCriterios(int valor) {
-		numCriterios_ = valor;
+		numCriterios = valor;
 	}
 
 	/**
@@ -217,7 +217,7 @@ public class lectorProblema {
 	 * @return ArrayList<String>
 	 */
 	public ArrayList<String> getArrayNombreAtributos() {
-		return nombreAtributos_;
+		return nombreAtributos;
 	}
 
 	/**
@@ -225,7 +225,7 @@ public class lectorProblema {
 	 * @return ArrayList<Boolean>
 	 */
 	public ArrayList<Boolean> getArrayMaxMinAtributos() {
-		return maxminAtributos_;
+		return maxminAtributos;
 	}
 
 	/**
@@ -233,7 +233,7 @@ public class lectorProblema {
 	 * @return ArrayList<ArrayList<Float>
 	 */
 	public ArrayList<ArrayList<Float>> getArrayValoresAtributos() {
-		return valoresAtributos_;
+		return valoresAtributos;
 	}
 
 	/**

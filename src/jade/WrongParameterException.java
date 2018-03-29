@@ -7,7 +7,6 @@ package jade;
  * Asignatura "Sistemas Inteligentes Avanzados"
  * Master en Ingeniería Informática por la ULL
  */
-
 public class WrongParameterException extends Exception {
 	public WrongParameterException ( String msg ) {
 		super( msg ) ;

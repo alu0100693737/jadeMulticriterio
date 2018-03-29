@@ -16,7 +16,7 @@ public class problemaMulticriterioAgenteModerador extends Agent {
 	/**
 	 * Atributo de la clase leerProblema para la lectura del problema
 	 */
-	private lectorProblema lectorFichero_;
+	private lectorProblema lectorFichero;
 	/**
 	 * Atributo de la clase leerImportanciasRelativas para la lectura de importancias por usuarios
 	 */
@@ -25,24 +25,36 @@ public class problemaMulticriterioAgenteModerador extends Agent {
 	/**
 	 * Variable final que almacena el nombre del fichero que contiene los datos del problema
 	 */
-	public final static String FICHERO_PROBLEMA = "datosProblema.txt";
+	public static final String FICHERO_PROBLEMA = "datosProblema.txt";
 	/**
 	 * Variable final que almacena el nombre del fichero que contiene las importancias relativas de los usuarios
 	 */
-	public final static String FICHERO_IMPORTANCIAS_RELATIVAS = "importanciaRelativaPersonal.txt";
+	public static final String FICHERO_IMPORTANCIAS_RELATIVAS = "importanciaRelativaPersonal.txt";
 	
 	/**
 	 * Metodo para la inicializacion del agente moderador
 	 */
 	protected void setup() {     
 		try {
-			lectorFichero_ = new lectorProblema(FICHERO_PROBLEMA);
+			lectorFichero = new lectorProblema(FICHERO_PROBLEMA);
 			lectorFicheroImportancias_ = new lectorImportanciasRelativas(FICHERO_IMPORTANCIAS_RELATIVAS, getLectorFichero().getNumCriterios());
 		} catch (Exception e) {
 			System.err.println("Error en el agente moderador");
 			return;			
 		}
 		System.out.println("Agente moderador, ya se han leido los ficheros");
+		String[] args1 = new String[2];
+	    args1[0] = "-agents";
+	    args1[1] = "prueba2:jade.PrimerAgente";
+	    
+	    try {
+			Thread.sleep(4000);
+		} catch (InterruptedException e) {
+			System.err.println("Interrumpido");
+		}
+	    jade.Boot.main(args1);  
+	
+		System.out.println("PEPE");
 	}
 	
 	/**
@@ -57,7 +69,7 @@ public class problemaMulticriterioAgenteModerador extends Agent {
 	 * @return lectorFichnero_
 	 */
 	public lectorProblema getLectorFichero() {
-		return lectorFichero_;
+		return lectorFichero;
 	}
 	
 	/**
