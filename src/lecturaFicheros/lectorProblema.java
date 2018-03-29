@@ -5,44 +5,53 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 /**
- * Clase leerProblema
+ * Clase lectorProblema
  * Lee un archivo con la información del problema multicriterio y la almacena en 
  * una estructura valida.
  * @author Ivan Garcia Campos   alu0100693737@ull.edu.es
  * @version 1.0, 29/03/2018
  * Asignatura "Sistemas Inteligentes Avanzados"
  * Master en Ingeniería Informática por la ULL
+ * 
+ * Ej:
+ * 
+ * 4 6 1 													-> alternativas, atributos 1 si tiene descripcion, 0 datos directos 
+ * velMax distDespegue cargaMax precio fiabilidad manejo	-> descripcion, puede estar o no
+ * 1 0 1 0 1 1 												-> segunda linea max(1) o min(0)
+ * 2.0 1.5 2.0 5.5 5 9										-> datos
+ * 2.5 2.7 1.8 6.5 3 5
+ * 1.8 2.0 2.1 4.5 7 7
+ * 2.2 1.8 2.0 5.0 5 5
  */
+public class lectorProblema {
 
-public class leerProblema {
-
-	/*
+	/**
 	 * Numero de alternativas para el decisor
 	 */
 	private int numAlternativas_;
-	/*
+	/**
 	 * Numero de criterios a tener en cuenta
 	 */
 	private int numCriterios_;
-	/*
+	/**
 	 * Array con los nombres de los criterios, parametro no obligatorio
 	 */
 	private ArrayList<String> nombreAtributos_;
-	/*
+	/**
 	 * Array que indica que criterio debe maximizarse y cual minimizarse (1 para max, 0 para min)
 	 */
 	private ArrayList<Boolean> maxminAtributos_;
-	/*
+	/**
 	 * Array con los valores de todos los criterios para todas las alternativas 
 	 */
 	private ArrayList<ArrayList<Float>> valoresAtributos_;
 
-	/*
+	/**
 	 * Constructor de la clase, lee el fichero y lo muestra
 	 * @param archivo		Archivo a analizar
 	 * @throws IllegalArgumentException, Exception si algun dato del fichero es incorrecto, sobra o falta elemento.
 	 */
-	public leerProblema(String archivo) throws IllegalArgumentException, Exception {
+	public lectorProblema(String archivo) throws IllegalArgumentException, Exception {
 		numAlternativas_ = 0;
 		numCriterios_ = 0;
 		maxminAtributos_ = new ArrayList<Boolean>();
@@ -52,7 +61,7 @@ public class leerProblema {
 		showFichero();
 	}
 
-	/*
+	/**
 	 * Método que lee el fichero especificado por parametro
 	 * @param archivo		Archivo a analizar
 	 * @throws IllegalArgumentException, Exception si algun dato del fichero es incorrecto, sobra o falta elemento.
@@ -129,7 +138,7 @@ public class leerProblema {
 		}
 	}
 
-	/*
+	/**
 	 * Metodo que muestra el fichero del problema multicriterio
 	 */
 	public void showFichero() {
@@ -159,7 +168,7 @@ public class leerProblema {
 		}
 	}
 
-	/*
+	/**
 	 * Metodo que cambia un entero 0 o 1 en false y true, tipo C++
 	 * @return static boolean
 	 */
@@ -172,7 +181,7 @@ public class leerProblema {
 		return input == 1;
 	}
 
-	/*
+	/**
 	 * Metodo que devuelve el numero de alternativas del problema
 	 * @return int
 	 */
@@ -180,7 +189,7 @@ public class leerProblema {
 		return numAlternativas_;
 	}
 
-	/*
+	/**
 	 * Metodo que asigna el valor del numero de alternativas
 	 * @param valor
 	 */
@@ -188,7 +197,7 @@ public class leerProblema {
 		numAlternativas_ = valor;
 	}
 
-	/*
+	/**
 	 * Metodo que devuelve el numero de criterios del problema
 	 * @return int
 	 */
@@ -196,14 +205,14 @@ public class leerProblema {
 		return numCriterios_;
 	}
 
-	/*
+	/**
 	 * Metodo que asigna el valor del numero de criterios del problema
 	 */
 	public void setNumCriterios(int valor) {
 		numCriterios_ = valor;
 	}
 
-	/*
+	/**
 	 * Metodo que devuelve el array con los nombres de los atributos/criterios a medir
 	 * @return ArrayList<String>
 	 */
@@ -211,7 +220,7 @@ public class leerProblema {
 		return nombreAtributos_;
 	}
 
-	/*
+	/**
 	 * Metodo que devuelve el array que indica que criterio debe maximizarse o minimizarse
 	 * @return ArrayList<Boolean>
 	 */
@@ -219,7 +228,7 @@ public class leerProblema {
 		return maxminAtributos_;
 	}
 
-	/*
+	/**
 	 * Metodo que devuelve el array con los valores de cada uno de los atributos
 	 * @return ArrayList<ArrayList<Float>
 	 */
@@ -227,7 +236,7 @@ public class leerProblema {
 		return valoresAtributos_;
 	}
 
-	/*
+	/**
 	 * Metodo que añade los valores de un determinado criterio/atributo al array de atributos/criterios
 	 * @param ArrayList<Float> 
 	 */
