@@ -1,4 +1,4 @@
-package jade;
+package lecturaFicheros;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -57,7 +57,7 @@ public class leerProblema {
 	 * @param archivo		Archivo a analizar
 	 * @throws IllegalArgumentException, Exception si algun dato del fichero es incorrecto, sobra o falta elemento.
 	 */
-	private void leerFichero(String archivo)  throws IllegalArgumentException, Exception{
+	private void leerFichero(String archivo)  throws IllegalArgumentException, Exception {
 		String cadena;
 		BufferedReader b = null;
 
@@ -79,10 +79,10 @@ public class leerProblema {
 
 					cadena = b.readLine();
 					splited = cadena.split("\\s+");
-					if(splited.length == getNumCriterios()) {
+					if(splited.length == getNumCriterios()) 
 						for(int i = 0; i < getNumCriterios(); i++) 
 							getArrayNombreAtributos().add(splited[i]);
-					} else {
+					else {
 						System.err.println("Error en el fichero, la linea de atributos debe tener el mismo lenght que se indica en la primera linea");
 						b.close();
 						return;
@@ -97,12 +97,11 @@ public class leerProblema {
 			//Atributos max o min
 			cadena = b.readLine();
 			splited = cadena.split("\\s+");
-			if(splited.length == getNumCriterios()) {
-				for(int i = 0; i < getNumCriterios(); i++) {
+			if(splited.length == getNumCriterios()) 
+				for(int i = 0; i < getNumCriterios(); i++) 
 					getArrayMaxMinAtributos().add(intToBool(Integer.parseInt(splited[i])));
-					System.out.println("splited vale " + splited[i]);
-				}
-			} else {
+	
+			else {
 				System.err.println("Error en el fichero, la linea de atributos debe tener el mismo lenght que se indica en la primera linea");
 				b.close();
 				return;
@@ -138,13 +137,14 @@ public class leerProblema {
 			System.out.println("Fichero aun no leido, esta condicion no deberia ocurrir");
 		} else {
 			System.out.println("Fichero de entrada: ");
-			System.out.println(getNumAlternativas() + " " + getNumCriterios());
+			System.out.print(getNumAlternativas() + " " + getNumCriterios());
 			if(getArrayNombreAtributos().size() > 0) {
+				System.out.println(" 1");
 				for(int i = 0; i < getArrayNombreAtributos().size(); i++) {
 					System.out.print(getArrayNombreAtributos().get(i) + " ");
 				}
-				System.out.println();
 			}
+			System.out.println();
 
 			for(int i = 0; i < getArrayMaxMinAtributos().size(); i++) {
 				System.out.print(getArrayMaxMinAtributos().get(i) + " ");
