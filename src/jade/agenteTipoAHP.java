@@ -1,7 +1,7 @@
 package jade;
 import jade.core.Agent;
 
-public class agenteTipoElectre extends Agent {
+public class agenteTipoAHP extends Agent {
 	
 	protected void setup() { 
 		System.out.println("Creando el agente");

@@ -2,5 +2,5 @@ projectKey=JadeMulticriterio:JadeMulticriterio
 serverUrl=http://localhost:9000
 serverVersion=6.7.2.37468
 dashboardUrl=http://localhost:9000/dashboard/index/JadeMulticriterio:JadeMulticriterio
-ceTaskId=AWJzh5RwrmXJEDoxs3L3
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AWJzh5RwrmXJEDoxs3L3
+ceTaskId=AWJ0FVTHrmXJEDoxs3L4
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AWJ0FVTHrmXJEDoxs3L4

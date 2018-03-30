@@ -2,7 +2,7 @@ package jade;
 import jade.core.AID;
 import jade.core.Agent;
 
-public class SegundoAgente extends Agent {
+public class agentePrueba extends Agent {
 	private String targetBookTitle;   
 	// The list of known seller agents   
 	private AID[] sellerAgents = {new AID("seller1", AID.ISLOCALNAME),

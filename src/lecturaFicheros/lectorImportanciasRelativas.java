@@ -76,6 +76,8 @@ public class lectorImportanciasRelativas {
 		}
 	}
 	
+	/************************ GETS y SETS ************************/
+	
 	/**
 	 * Metodo que devuelve el conjunto de importancias relativas
 	 * @return ArrayList<importanciaRelativaIndividual>

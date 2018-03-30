@@ -11,7 +11,7 @@ import lecturaFicheros.lectorImportanciasRelativas;
  * Asignatura "Sistemas Inteligentes Avanzados"
  * Master en Ingeniería Informática por la ULL
  */
-public class problemaMulticriterioAgenteModerador extends Agent {
+public class agenteModeradorProblemaMulticriterio extends Agent {
 	
 	/**
 	 * Atributo de la clase leerProblema para la lectura del problema
@@ -43,17 +43,7 @@ public class problemaMulticriterioAgenteModerador extends Agent {
 			return;			
 		}
 		System.out.println("Agente moderador, ya se han leido los ficheros");
-		String[] args1 = new String[2];
-	    args1[0] = "-agents";
-	    args1[1] = "prueba2:jade.PrimerAgente";
-	    
-	    try {
-			Thread.sleep(4000);
-		} catch (InterruptedException e) {
-			System.err.println("Interrumpido");
-		}
-	    jade.Boot.main(args1);  
-	
+		
 		System.out.println("PEPE");
 	}
 	

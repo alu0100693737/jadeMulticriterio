@@ -68,6 +68,8 @@ public class importanciaRelativaIndividual {
 		System.out.println();
 	}
 	
+	/************************ GETS y SETS ************************/
+
 	/**
 	 * Metodo que devuelve el nombre del usuario
 	 * @return nombre_

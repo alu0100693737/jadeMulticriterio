@@ -180,6 +180,8 @@ public class lectorProblema {
 		// Note we designate 1 as true and 0 as false though some may disagree
 		return input == 1;
 	}
+	
+	/************************ GETS y SETS ************************/
 
 	/**
 	 * Metodo que devuelve el numero de alternativas del problema

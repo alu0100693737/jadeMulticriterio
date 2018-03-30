@@ -3,11 +3,11 @@ package jade;
 import jade.core.Agent;
 import jade.core.behaviours.SimpleBehaviour;
 
-public class myBehaviour extends SimpleBehaviour {
+public class comportamientoElectre extends SimpleBehaviour {
 
 	private int iteration_;
 	
-	public myBehaviour(Agent a) {
+	public comportamientoElectre(Agent a) {
 		super(a);
 	}
 	
