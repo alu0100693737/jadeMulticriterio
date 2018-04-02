@@ -27,7 +27,7 @@ public class lectorImportanciasRelativas {
 		importanciasRelativas = new ArrayList<importanciaRelativaIndividual>();
 		
 		leerFicheroImportancias(archivo, numCriterios);
-		showImportanciasRelativas();
+		//showImportanciasRelativas();
 	}
 	
 	/**
@@ -35,7 +35,7 @@ public class lectorImportanciasRelativas {
 	 * @param archivo 			Archivo a leer, extraccion de datos
 	 * @param numCriterios		Numero de criterios/atributos del problema. Comprobación fichero correcto
 	 */
-	public void leerFicheroImportancias(String archivo, int numCriterios)  throws Exception {
+	private void leerFicheroImportancias(String archivo, int numCriterios)  throws Exception {
 		String cadena;
 		BufferedReader b = null;
 		FileReader f = null;

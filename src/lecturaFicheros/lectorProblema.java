@@ -58,6 +58,20 @@ public class lectorProblema {
 		valoresAtributos = new ArrayList<ArrayList<Float>>();
 
 		leerFichero(archivo);
+		//showFichero();
+	}
+
+	/**
+	 * Constructor copia, utilizado para que los agentes tengan acceso a los datos
+	 * @param valor lectorProblema
+	 */
+	public lectorProblema(Object valor) {
+		numAlternativas = ((lectorProblema) valor).getNumAlternativas();
+		numCriterios = ((lectorProblema) valor).getNumCriterios();
+		maxminAtributos = new ArrayList<Boolean>(((lectorProblema) valor).getArrayMaxMinAtributos());
+		valoresAtributos = new ArrayList<ArrayList<Float>>(((lectorProblema) valor).getArrayValoresAtributos());
+		nombreAtributos = new ArrayList<String>(((lectorProblema) valor).getArrayNombreAtributos());
+		
 		showFichero();
 	}
 
@@ -160,6 +174,7 @@ public class lectorProblema {
 			}
 			System.out.println();
 
+			System.out.println("Tamanos " + getArrayValoresAtributos().size() + " " + getNumCriterios());
 			for(int i = 0; i < getArrayValoresAtributos().size(); i++) {
 				for(int j = 0; j < getNumCriterios(); j++) 
 					System.out.print(getArrayValoresAtributos().get(i).get(j) + " ");
@@ -180,7 +195,7 @@ public class lectorProblema {
 		// Note we designate 1 as true and 0 as false though some may disagree
 		return input == 1;
 	}
-	
+
 	/************************ GETS y SETS ************************/
 
 	/**

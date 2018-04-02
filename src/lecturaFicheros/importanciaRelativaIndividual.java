@@ -32,11 +32,22 @@ public class importanciaRelativaIndividual {
 	}
 	
 	/**
+	 * Constructor copia, utilizado para que los agentes tengan los datos correspondientes
+	 * @param datos importanciaRelativaIndividual
+	 */
+	public importanciaRelativaIndividual(Object datos) {
+		nombre = ((importanciaRelativaIndividual) datos).getNombre();
+		importancias = new ArrayList<Float>(((importanciaRelativaIndividual) datos).getImportancias());
+		
+		showImportancias();
+	}
+	
+	/**
 	 * Metodo para la lectura del parametro datos y almacenamiento en estructura de la clase
 	 * @param datos				Datos del usuario	
 	 * @param tamanoCorrecto	Numero de atributos del problema. Comprobación fichero correcto
 	 */
-	public void leerImportancia(String datos, int tamanoCorrecto) {
+	private void leerImportancia(String datos, int tamanoCorrecto) {
 		String[] splited = datos.split("\\s+");
 		//La suma de las ponderaciones debe ser 1. Ej: 0.2 + 0.1 + 0.1 + 0.1 + 0.2 + 0.3
 		float comprobacionSuma = 0;
@@ -61,7 +72,7 @@ public class importanciaRelativaIndividual {
 	 * Metodo que muestra la información del usuario y sus importancias/pesos
 	 */
 	public void showImportancias() {
-		System.out.print("Nombre: " + getNombre() + " ");
+		System.out.print("\nNombre: " + getNombre() + " ");
 		for(int i = 0; i < getImportancias().size(); i++) {
 			System.out.print(getImportancias().get(i) + " ");
 		}

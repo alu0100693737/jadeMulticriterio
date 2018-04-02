@@ -1,39 +1,31 @@
 package jade;
 
-import jade.core.Agent;
-import jade.core.behaviours.SimpleBehaviour;
 
-public class comportamientoElectre extends SimpleBehaviour {
 
-	private int iteration_;
+public class comportamientoElectre {
+/*
 	
-	public comportamientoElectre(Agent a) {
-		super(a);
-	}
+	private boolean fin = false;
+	
+	
 	
 	@Override
 	public void action() {
-		if(getIteration() < 1) {
-			System.out.println("¿Ejecutando el comportamiento?");
-			addOneIteration();
-		} else {
-			done();
-		}
-	}
-
-	@Override
-	public boolean done() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	public int getIteration() {
-		return iteration_;
-	}
-	
-	public void addOneIteration() {
-		iteration_++;
-	}
-
+		
+		System.out.println(" Preparandose para recibir");
+		 
+		//Obtiene el primer mensaje de la cola de mensajes
+		ACLMessage mensaje = receive();
+        if (mensaje!= null)
+        {
+            System.out.println(getLocalName() + ": acaba de recibir el siguiente mensaje: ");
+            System.out.println(mensaje.toString());
+            fin = true;
+        }
+        }
+        public boolean done() {
+            return fin;
+        }
+*/
 }
 

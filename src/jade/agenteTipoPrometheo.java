@@ -3,11 +3,9 @@ import jade.core.Agent;
 
 public class agenteTipoPrometheo extends Agent {
 	
-	private String titulo;
-	
 	protected void setup() { 
 		System.out.println("Creando el agente");
-		addBehaviour(new comportamientoElectre(this));
+		//addBehaviour(new comportamientoElectre(this));
 	}
 	
 	protected void takeDown() { 
