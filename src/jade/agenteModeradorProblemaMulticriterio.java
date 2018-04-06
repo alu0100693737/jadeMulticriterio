@@ -93,7 +93,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 
 			//Añadiendo agentes de cada tipo
 			//int num = 1;
-			addAgenteTipoElectre(getLectorFicheroImportancias().getImportanciasRelativas().size());
+			addAgenteTipoElectre(1);
 			
 			enviarMensajeAgente();
 
