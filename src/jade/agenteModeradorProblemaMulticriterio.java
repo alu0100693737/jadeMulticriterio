@@ -86,19 +86,17 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 			propertiesAHP.setProperty(Profile.CONTAINER_NAME, "AHP");
 
 			electreContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesElectred));
-			//prometheoContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesPrometheo));
-			//ahpContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesAHP));
+			prometheoContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesPrometheo));
+			ahpContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesAHP));
 
 			System.out.println("Agente moderador, ya se han leido los ficheros, añadimos Electre");
 
 			//Añadiendo agentes de cada tipo
 			//int num = 1;
-			addAgenteTipoElectre(1);
+			//addAgenteTipoElectre(1);
+			addAgenteTipoPrometheo(1);
 			
-			enviarMensajeAgente();
-
-			//addAgenteTipoPrometheo();
-			//addAgenteTipoAHP();
+			//enviarMensajeAgente();
 
 		} catch (Exception e) {
 			System.err.println("Error en el agente moderador");
@@ -138,10 +136,26 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 		}
 	}
 
-	public void addAgenteTipoPrometheo() {
+	public void addAgenteTipoPrometheo(int numAgentes) {
 		try {
-			getContenedorPrometheo().createNewAgent("Prometheo1", "jade.agenteTipoPrometheo", null);
+			//Si existen prioridades para asignar a todos los agentes
+			if(numAgentes <= getLectorFicheroImportancias().getImportanciasRelativas().size()) {
+				
+				for(int i = 0; i < numAgentes; i++) {
+					
+					//A cada objeto se le pasan los datos del problema y la prioridad que corresponda
+					Object[] args = new Object[2];
+					args[0] = new lectorProblema(getLectorFichero());
+					args[1] = new importanciaRelativaIndividual(getLectorFicheroImportancias().getImportanciasRelativas().get(i));
+					
+					//tercer elemento, parametros
+					String nombre = "Prometheo" + i + "Procedure";
+					AgentController prueba  = getContenedorPrometheo().createNewAgent(nombre, "jade.agenteTipoPrometheo", args);
+					prueba.start();
+				}
+			}
 		} catch (StaleProxyException e1) {
+			System.out.println("Error");
 			e1.printStackTrace();
 		}
 	}
