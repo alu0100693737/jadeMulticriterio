@@ -14,8 +14,6 @@ public class agenteTipoPromethee extends Agent {
 	private importanciaRelativaIndividual importanciaRelativa;
 
 	private ArrayList<ArrayList<Float>> matrizIndicesPreferencia;
-	private ArrayList<ArrayList<Float>> matrizFlujoNeto;
-	
 	
 	protected void setup() { 
 		System.out.println("Creando el agente");
@@ -77,7 +75,7 @@ public class agenteTipoPromethee extends Agent {
 				ArrayList<Float> aux = new ArrayList<Float>();
 				for(int j = 0; j < getDatosProblema().getNumAlternativas(); j++) {
 					if(i != j) {
-						ArrayList<Integer> auxDiferenciasFuncion = new ArrayList<Integer>();
+						ArrayList<Float> auxDiferenciasFuncion = new ArrayList<Float>();
 						for(int k = 0; k < getDatosProblema().getNumCriterios(); k++) {
 							if(getDatosProblema().getArrayMaxMinAtributos().get(k) == true)
 							auxDiferenciasFuncion.add(funcionTipoI(
@@ -99,7 +97,8 @@ public class agenteTipoPromethee extends Agent {
 		}
 		
 		//Pseudocriterios. Funciones Tipo
-		public int funcionTipoI(float valor1, float valor2) { //Criterio usual
+		//Criterio usual
+		public float funcionTipoI(float valor1, float valor2) { 
 			if(valor1 > valor2) 
 				return 1;
 			else if(valor1 == valor2) 
@@ -108,7 +107,16 @@ public class agenteTipoPromethee extends Agent {
 				return -1;
 		}
 		
-		public float indicePreferenciaIndividual(ArrayList<Integer> pesos) {//Multiplica pesos por preferencia
+		// min 4:20 https://www.youtube.com/watch?v=mNwJYvn9ZsQ
+		//Preferencia lineal
+		public float funcionTipoII(float valor1, float valor2) { 						
+			if(valor1 > valor2) 
+				return 1;
+			else 
+				return (valor1/ valor2);
+		}
+
+		public float indicePreferenciaIndividual(ArrayList<Float> pesos) {//Multiplica pesos por preferencia
 			float suma = 0;
 			for(int i = 0; i < pesos.size(); i++) {
 				if(pesos.get(i) > -1)
@@ -116,14 +124,6 @@ public class agenteTipoPromethee extends Agent {
 			}
 			return suma;
 		}
-
-		//public int funcionTipoII() { 						//Quasi criterio
-			/*0 si diferencia menor igual a q
-			1 si diferencia es mayor que q*/
-			
-		//}
-		
-		//
 		
 		public void calculosFlujosPositivos() {
 			for(int i = 0; i < getDatosProblema().getNumAlternativas(); i++) {
@@ -170,8 +170,6 @@ public class agenteTipoPromethee extends Agent {
 		}
 		
 		public void calculosFlujoNeto() {
-			matrizFlujoNeto = new ArrayList<ArrayList<Float>>();
-		
 			for(int i = 0; i < getDatosProblema().getNumAlternativas(); i++) {
 				float aux = flujoPositivoAlternativa(i) - flujoNegativoAlternativa(i);
 					System.out.println("Alternativa: " + i + " con flujo neto: " + aux);

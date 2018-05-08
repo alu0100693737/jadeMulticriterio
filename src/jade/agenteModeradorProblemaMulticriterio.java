@@ -93,8 +93,9 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 
 			//Añadiendo agentes de cada tipo
 			//int num = 1;
-			//addAgenteTipoElectre(1);
-			addAgenteTipoPromethee(1);
+			addAgenteTipoElectre(1);
+			//addAgenteTipoPromethee(1);
+			//addAgenteTipoAHP(1);
 			
 			//enviarMensajeAgente();
 
@@ -160,10 +161,26 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 		}
 	}
 
-	public void addAgenteTipoAHP() {
+	public void addAgenteTipoAHP(int numAgentes) {
 		try {
-			getContenedorAHP().createNewAgent("AHP1", "jade.agenteTipoAHP", null);
+			//Si existen prioridades para asignar a todos los agentes
+			if(numAgentes <= getLectorFicheroImportancias().getImportanciasRelativas().size()) {
+				
+				for(int i = 0; i < numAgentes; i++) {
+					
+					//A cada objeto se le pasan los datos del problema y la prioridad que corresponda
+					Object[] args = new Object[2];
+					args[0] = new lectorProblema(getLectorFichero());
+					args[1] = new importanciaRelativaIndividual(getLectorFicheroImportancias().getImportanciasRelativas().get(i));
+					
+					//tercer elemento, parametros
+					String nombre = "AHP" + i + "Procedure";
+					AgentController prueba  = getContenedorPromethee().createNewAgent(nombre, "jade.agenteTipoAHP", args);
+					prueba.start();
+				}
+			}
 		} catch (StaleProxyException e1) {
+			System.out.println("Error");
 			e1.printStackTrace();
 		}
 	}
