@@ -48,7 +48,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 	private static Runtime rt;	
 
 	private static AgentContainer electreContainer;			// Almacena el container electre, tipo de resolucion de agente
-	private static AgentContainer prometheoContainer;		// Almacena el container prometheo, tipo de resolucion de agente
+	private static AgentContainer PrometheeContainer;		// Almacena el container Promethee, tipo de resolucion de agente
 	private static AgentContainer ahpContainer;				// Almacena el container ahp, tipo de resolucion
 
 	/**
@@ -70,7 +70,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 			}
 		});
 		
-		// Leemos los ficheros y creamos los correspondientes electre, prometheo y AHP
+		// Leemos los ficheros y creamos los correspondientes electre, Promethee y AHP
 		try {
 			lectorFichero = new lectorProblema(FICHERO_PROBLEMA);
 			lectorFicheroImportancias = new lectorImportanciasRelativas(FICHERO_IMPORTANCIAS_RELATIVAS, getLectorFichero().getNumCriterios());
@@ -80,13 +80,13 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 			//Propiedades de contenedores, solo nombre
 			ExtendedProperties propertiesElectred = new ExtendedProperties();
 			propertiesElectred.setProperty(Profile.CONTAINER_NAME, "Electre");
-			ExtendedProperties propertiesPrometheo = new ExtendedProperties();
-			propertiesPrometheo.setProperty(Profile.CONTAINER_NAME, "Prometheo");
+			ExtendedProperties propertiesPromethee = new ExtendedProperties();
+			propertiesPromethee.setProperty(Profile.CONTAINER_NAME, "Promethee");
 			ExtendedProperties propertiesAHP = new ExtendedProperties();
 			propertiesAHP.setProperty(Profile.CONTAINER_NAME, "AHP");
 
 			electreContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesElectred));
-			prometheoContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesPrometheo));
+			PrometheeContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesPromethee));
 			ahpContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesAHP));
 
 			System.out.println("Agente moderador, ya se han leido los ficheros, añadimos Electre");
@@ -94,7 +94,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 			//Añadiendo agentes de cada tipo
 			//int num = 1;
 			//addAgenteTipoElectre(1);
-			addAgenteTipoPrometheo(1);
+			addAgenteTipoPromethee(1);
 			
 			//enviarMensajeAgente();
 
@@ -136,7 +136,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 		}
 	}
 
-	public void addAgenteTipoPrometheo(int numAgentes) {
+	public void addAgenteTipoPromethee(int numAgentes) {
 		try {
 			//Si existen prioridades para asignar a todos los agentes
 			if(numAgentes <= getLectorFicheroImportancias().getImportanciasRelativas().size()) {
@@ -149,8 +149,8 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 					args[1] = new importanciaRelativaIndividual(getLectorFicheroImportancias().getImportanciasRelativas().get(i));
 					
 					//tercer elemento, parametros
-					String nombre = "Prometheo" + i + "Procedure";
-					AgentController prueba  = getContenedorPrometheo().createNewAgent(nombre, "jade.agenteTipoPrometheo", args);
+					String nombre = "Promethee" + i + "Procedure";
+					AgentController prueba  = getContenedorPromethee().createNewAgent(nombre, "jade.agenteTipoPromethee", args);
 					prueba.start();
 				}
 			}
@@ -193,11 +193,11 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 	}
 
 	/**
-	 * Metodo que devuelve el contenedor de agentes Prometheo
+	 * Metodo que devuelve el contenedor de agentes Promethee
 	 * @return AgentContaienr
 	 */
-	public static AgentContainer getContenedorPrometheo() {
-		return prometheoContainer;
+	public static AgentContainer getContenedorPromethee() {
+		return PrometheeContainer;
 	}
 
 	/**
