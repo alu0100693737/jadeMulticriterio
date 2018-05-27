@@ -39,11 +39,11 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 	/**
 	 * Variable final que almacena el nombre del fichero que contiene los datos del problema
 	 */
-	public static final String FICHERO_PROBLEMA = "datosProblema.txt";
+	public static final String FICHERO_PROBLEMA = "datosProblema2.txt";
 	/**
 	 * Variable final que almacena el nombre del fichero que contiene las importancias relativas de los usuarios
 	 */
-	public static final String FICHERO_IMPORTANCIAS_RELATIVAS = "importanciaRelativaPersonal.txt";
+	public static final String FICHERO_IMPORTANCIAS_RELATIVAS = "importanciaRelativaPersonalCoches.txt";
 
 	private static Runtime rt;	
 
@@ -93,11 +93,11 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 
 			//Añadiendo agentes de cada tipo
 			//int num = 1;
-			addAgenteTipoElectre(1);
+			//addAgenteTipoElectre(1);
 			//addAgenteTipoPromethee(1);
-			//addAgenteTipoAHP(1);
+			addAgenteTipoAHP(1);
 			
-			//enviarMensajeAgente();
+			enviarMensajeAgente();
 
 		} catch (Exception e) {
 			System.err.println("Error en el agente moderador");
@@ -175,7 +175,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 					
 					//tercer elemento, parametros
 					String nombre = "AHP" + i + "Procedure";
-					AgentController prueba  = getContenedorPromethee().createNewAgent(nombre, "jade.agenteTipoAHP", args);
+					AgentController prueba  = getContenedorAHP().createNewAgent(nombre, "jade.agenteTipoAHP", args);
 					prueba.start();
 				}
 			}
