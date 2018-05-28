@@ -24,6 +24,8 @@ public class agenteTipoAHP extends Agent {
 	private ArrayList<ArrayList<ArrayList<Float>>> conjuntoMatricesAlternativasNormalizada;
 	private ArrayList<ArrayList<Float>> conjuntoMatrizPrioridadesAlternativas;
 	
+	private ArrayList<Float> prioridadesFinal;
+	
 	protected void setup() { 
 		System.out.println("Creando el agente");
 		System.out.println("\nHola! El agente "+ getAID().getName()+" está listo.\n");
@@ -86,6 +88,12 @@ public class agenteTipoAHP extends Agent {
 			showMatricesAlternativasSegunPrioridadesNormalizada();
 			
 			calcularConjuntoMatrizPrioridadesAlternativas();
+			
+			showConjuntoMatrizPrioridadAlternativas();
+			
+			calcularPrioridadFinal();
+			
+			showPrioridadesFinal();
 		}
 
 		/**
@@ -144,15 +152,14 @@ public class agenteTipoAHP extends Agent {
 								preferencias.add(valor);
 								//System.out.println("Añadido el valor " + valor);
 							}
-
 						}
 					} else {
 						preferencias.add(1.0f);
 						//System.out.println("Iguales, añadido un 1");
 					}
-				} getMatrizComparacionPares().add(preferencias);
+				} 
+				getMatrizComparacionPares().add(preferencias);
 			}
-
 		}
 
 		public void calcularMatrizComparacionesParesNormalizada() {
@@ -174,15 +181,10 @@ public class agenteTipoAHP extends Agent {
 			for(int i = 0; i < getDatosProblema().getNumCriterios(); i++) {
 				ArrayList<Float> criterioFila = new ArrayList<Float>();
 				for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
-					criterioFila.add(getMatrizComparacionPares().get(i).get(j) / getConjuntoSumaPorCriterio().get(i));
+					criterioFila.add(getMatrizComparacionPares().get(i).get(j) / getConjuntoSumaPorCriterio().get(j));
 				}
 				getMatrizComparacionParesNormalizada().add(criterioFila);
 			}
-		}
-
-		public void calcularConjuntoMatrizPrioridadesAlternativas() {
-			conjuntoMatrizPrioridadesAlternativas = new ArrayList<ArrayList<Float>>();
-			System.out.println("Pepe");
 		}
 		
 		public void calcularPrioridades() {
@@ -192,6 +194,7 @@ public class agenteTipoAHP extends Agent {
 				for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
 					suma += getMatrizComparacionParesNormalizada().get(i).get(j);
 				}
+				suma /= getDatosProblema().getNumCriterios();
 				getConjuntoPrioridades().add(suma);
 			}
 		}
@@ -200,7 +203,7 @@ public class agenteTipoAHP extends Agent {
 		public void calcularMatricesAlternativasSegunPrioridades() {
 			conjuntoMatricesAlternativas = new ArrayList<ArrayList<ArrayList<Float>>>();
 			
-			for(int i = 0; i < getDatosProblema().getNumAlternativas(); i++) 
+			for(int i = 0; i < getDatosProblema().getNumCriterios(); i++) 
 				getConjuntoMatricesAlternativas().add(calcularMatrizAlternativasSegunPrioridadIndividual(i));
 		}
 
@@ -221,7 +224,7 @@ public class agenteTipoAHP extends Agent {
 					max = getDatosProblema().getArrayValoresAtributos().get(i).get(criterio);
 				} 
 			}
-			System.out.println("Max vale " + max + " min " + min);
+			//System.out.println("Max vale " + max + " min " + min);
 			
 			float rango = max - min;
 			System.out.println("Rango de " + rango);
@@ -235,51 +238,106 @@ public class agenteTipoAHP extends Agent {
 						filaComparacion.add(1.0f);
 					} else {
 						float diferencia = getDatosProblema().getArrayValoresAtributos().get(i).get(criterio) - getDatosProblema().getArrayValoresAtributos().get(j).get(criterio);
-						if(diferencia > 0) {
-							//System.out.println("Diferencia del tipo  " + diferencia + " entre preferencia " + i + " " + j);
-							if(diferencia < medida) { 
-								filaComparacion.add(3.0f);
+						
+						//Se consideran elementos min y maximos!!! IMPORTANTE
+						if(getDatosProblema().getArrayMaxMinAtributos().get(criterio) == true) {
+							if(diferencia > 0) {
+								//System.out.println("Diferencia del tipo  " + diferencia + " entre preferencia " + i + " " + j);
+								if(diferencia < medida) { 
+									filaComparacion.add(3.0f);
+								}
+								else {
+									//System.out.println("Diferencia " + diferencia + " valoraumento " + medida);
+									float valor = diferencia / medida;
+									//System.out.println("Valor vale " + valor);
+									valor -= 1.0f;
+									//System.out.println("Valor vale " + valor);
+									valor = valor * 2; //valor de aumento
+									//System.out.println("Valor vale " + valor);
+									valor += 3.0f;
+									//System.out.println("Valor vale " + valor);
+									filaComparacion.add((float) Math.ceil(valor));
+									//System.out.println("Añadido el valor " + valor);
+								}
+							} else if (diferencia == 0.0f) { //igual
+								//System.out.println("Diferencia del tipo  " + diferencia + " entre preferencia " + i + " " + j);
+								filaComparacion.add(1.0f);
+	
+							} else { //dividido
+								//System.out.println("Diferencia del tipo  " + diferencia + " entre preferencia " + i + " " + j);
+								if(diferencia > (-medida)) {
+									//System.out.println("Dividiendo por poco");
+	
+									float aux = 1.0f / 3.0f;
+									filaComparacion.add(aux);
+									//System.out.println("Añadido un " + aux);
+								}
+								else {
+									//System.out.println("Dividiendo por mucho");
+									float valor = diferencia / - medida;
+									//System.out.println("Valor " + valor);
+									valor -= 1.0f;
+									//System.out.println("Valor " + valor);
+									valor = valor * 2; //Factor de aumento
+									//System.out.println("Valor " + valor);
+									valor += 3.0f;
+									//System.out.println("Valor " + valor);
+									valor = 1.0f / valor;
+	
+									filaComparacion.add(valor);
+									//System.out.println("Añadido el valor " + valor);
+								}
 							}
-							else {
-								//System.out.println("Diferencia " + diferencia + " valoraumento " + medida);
-								float valor = diferencia / medida;
-								//System.out.println("Valor vale " + valor);
-								valor -= 1.0f;
-								//System.out.println("Valor vale " + valor);
-								valor = valor * 2; //valor de aumento
-								//System.out.println("Valor vale " + valor);
-								valor += 3.0f;
-								//System.out.println("Valor vale " + valor);
-								filaComparacion.add((float) Math.ceil(valor));
-								//System.out.println("Añadido el valor " + valor);
-							}
-						} else if (diferencia == 0.0f) { //igual
-							//System.out.println("Diferencia del tipo  " + diferencia + " entre preferencia " + i + " " + j);
-							filaComparacion.add(1.0f);
-
-						} else { //dividido
-							//System.out.println("Diferencia del tipo  " + diferencia + " entre preferencia " + i + " " + j);
-							if(diferencia > (-medida)) {
-								//System.out.println("Dividiendo por poco");
-
-								float aux = 1.0f / 3.0f;
-								filaComparacion.add(aux);
-								//System.out.println("Añadido un " + aux);
-							}
-							else {
-								System.out.println("Dividiendo por mucho");
-								float valor = diferencia / - medida;
-								//System.out.println("Valor " + valor);
-								valor -= 1.0f;
-								//System.out.println("Valor " + valor);
-								valor = valor * 2; //Factor de aumento
-								//System.out.println("Valor " + valor);
-								valor += 3.0f;
-								//System.out.println("Valor " + valor);
-								valor = 1.0f / valor;
-
-								filaComparacion.add(valor);
-								//System.out.println("Añadido el valor " + valor);
+						} //Criterio max 
+						else {
+							
+							if(diferencia < 0) {
+								//System.out.println("Diferencia del tipo  " + diferencia + " entre preferencia " + i + " " + j);
+								if(diferencia > -medida) { 
+									filaComparacion.add(3.0f);
+								}
+								else {
+									//System.out.println("Diferencia " + diferencia + " valoraumento " + medida);
+									float valor = diferencia / -medida;
+									//System.out.println("Valor vale " + valor);
+									valor -= 1.0f;
+									//System.out.println("Valor vale " + valor);
+									valor = valor * 2; //valor de aumento
+									//System.out.println("Valor vale " + valor);
+									valor += 3.0f;
+									valor = (float) Math.ceil(valor);
+									//System.out.println("Valor vale " + valor);
+									filaComparacion.add(valor);
+									//System.out.println("Añadido el valor " + valor);
+								}
+							} else if (diferencia == 0.0f) { //igual
+								//System.out.println("Diferencia del tipo  " + diferencia + " entre preferencia " + i + " " + j);
+								filaComparacion.add(1.0f);
+	
+							} else { //dividido
+								//System.out.println("Diferencia del tipo  " + diferencia + " entre preferencia " + i + " " + j);
+								if(diferencia < medida) {
+									//System.out.println("Dividiendo por poco");
+	
+									float aux = 1.0f / 3.0f;
+									filaComparacion.add(aux);
+									//System.out.println("Añadido un " + aux);
+								}
+								else {
+									//System.out.println("Dividiendo por mucho");
+									float valor = diferencia / medida;
+									//System.out.println("Valor " + valor);
+									valor -= 1.0f;
+									//System.out.println("Valor " + valor);
+									valor = valor * 2; //Factor de aumento
+									//System.out.println("Valor " + valor);
+									valor += 3.0f;
+									//System.out.println("Valor " + valor);
+									valor = 1.0f / valor;
+	
+									filaComparacion.add(valor);
+									//System.out.println("Añadido el valor " + valor);
+								}
 							}
 						}
 					}
@@ -312,7 +370,7 @@ public class agenteTipoAHP extends Agent {
 					ArrayList<Float> filaNormalizada = new ArrayList<Float>();
 					
 					for(int k = 0; k < getDatosProblema().getNumAlternativas(); k++) {
-						System.out.println("Dividiendo " + getConjuntoMatricesAlternativas().get(i).get(j).get(k) + " " + sumasColumnas.get(k));
+						//System.out.println("Dividiendo " + getConjuntoMatricesAlternativas().get(i).get(j).get(k) + " " + sumasColumnas.get(k));
 						filaNormalizada.add(getConjuntoMatricesAlternativas().get(i).get(j).get(k) / sumasColumnas.get(k));
 					}
 					matrizAlternativaNormalizada.add(filaNormalizada);
@@ -321,8 +379,49 @@ public class agenteTipoAHP extends Agent {
 			}
 		}
 		
+		public void calcularConjuntoMatrizPrioridadesAlternativas() {
+			conjuntoMatrizPrioridadesAlternativas = new ArrayList<ArrayList<Float>>();
+			//calculamos los vectores de cada matriz, sumando cada fila
+			for(int i = 0; i < getConjuntoMatricesAlternativasNormalizada().size(); i++) {
+				
+				ArrayList<Float> aux = new ArrayList<Float>();
+				
+				for(int j = 0; j < getDatosProblema().getNumAlternativas(); j++) {
+					float suma = 0;
+					for(int k = 0; k < getDatosProblema().getNumAlternativas(); k++) {
+						//System.out.println("Sumando " + getConjuntoMatricesAlternativasNormalizada().get(i).get(j).get(k));
+						suma += getConjuntoMatricesAlternativasNormalizada().get(i).get(j).get(k);
+					}
+					suma /= getDatosProblema().getNumAlternativas();
+					aux.add(suma);
+				}
+				getConjuntoMatrizPrioridadesAlternativas().add(aux);
+			}
+		}
+		
+		public void calcularPrioridadFinal() {
+			prioridadesFinal = new ArrayList<Float>();
+			for(int i = 0; i < getDatosProblema().getNumAlternativas(); i++) {
+				System.out.println("Alternativa  " + i);;
+				float suma = 0;
+				for(int j = 0; j < getConjuntoMatrizPrioridadesAlternativas().size(); j++) { //mismo valor que num criterios
+					suma += getConjuntoPrioridades().get(j) * getConjuntoMatrizPrioridadesAlternativas().get(j).get(i);
+				}
+				getPrioridadesFinal().add(suma);
+			}
+		}
+		
+		public void showConjuntoMatrizPrioridadAlternativas() {
+			for(int i = 0; i < getConjuntoMatrizPrioridadesAlternativas().size(); i++) {
+				System.out.println("Prioridad de alternativa " + i);
+				for(int j = 0; j < getDatosProblema().getNumAlternativas(); j++) {
+					System.out.println(getConjuntoMatrizPrioridadesAlternativas().get(i).get(j));
+				}
+			}	
+		}
+		
 		public void showMatrizComparacionPares() {
-			System.out.println("Matriz de comparación por pares: \n");
+			System.out.println("\nMatriz de comparación por pares: \n");
 			for(int i = 0; i < getMatrizComparacionPares().size(); i++) {
 				for(int j = 0; j < getMatrizComparacionPares().size(); j++) {
 					System.out.printf("%.2f  ", getMatrizComparacionPares().get(i).get(j));
@@ -330,7 +429,7 @@ public class agenteTipoAHP extends Agent {
 				System.out.println();
 			}
 		}
-
+		
 		public void showMatrizComparacionParesNormalizada() {
 			System.out.println("Matriz de comparación por pares: \n");
 			for(int i = 0; i < getMatrizComparacionParesNormalizada().size(); i++) {
@@ -388,6 +487,12 @@ public class agenteTipoAHP extends Agent {
 			}
 		}
 		
+		public void showPrioridadesFinal() {
+			for(int i = 0; i < getPrioridadesFinal().size(); i++) {
+				System.out.println("Prioridad num " + i + " con: " + getPrioridadesFinal().get(i));
+			}
+		}
+		
 		public ArrayList<Float> getConjuntoSumaPorCriterio() {
 			return conjuntoSumaPorCriterio;
 		}
@@ -406,6 +511,10 @@ public class agenteTipoAHP extends Agent {
 		
 		public ArrayList<ArrayList<Float>> getConjuntoMatrizPrioridadesAlternativas() {
 			return conjuntoMatrizPrioridadesAlternativas;
+		}
+		
+		public ArrayList<Float> getPrioridadesFinal() {
+			return prioridadesFinal;
 		}
 		
 	}
