@@ -69,27 +69,27 @@ public class agenteTipoAHP extends Agent {
 			System.out.println("Se calcula la matriz de comparacion por pares");
 			calcularMatrizComparacionPares();
 
-			showMatrizComparacionPares();
+			//showMatrizComparacionPares();
 
-			System.out.println("Se calcula la matriz normalizada");
+			//System.out.println("Se calcula la matriz normalizada");
 			calcularMatrizComparacionesParesNormalizada();
 
-			showMatrizComparacionParesNormalizada();
+			//showMatrizComparacionParesNormalizada();
 
 			calcularPrioridades();
-			showConjuntoPrioridades();
+			//showConjuntoPrioridades();
 
 			calcularMatricesAlternativasSegunPrioridades();
 			
-			showMatricesAlternativasSegunPrioridades();
+			//showMatricesAlternativasSegunPrioridades();
 			
 			calcularMatricesAlternativasSegunPrioridadesNormalizada();
 			
-			showMatricesAlternativasSegunPrioridadesNormalizada();
+			//showMatricesAlternativasSegunPrioridadesNormalizada();
 			
 			calcularConjuntoMatrizPrioridadesAlternativas();
 			
-			showConjuntoMatrizPrioridadAlternativas();
+			//showConjuntoMatrizPrioridadAlternativas();
 			
 			calcularPrioridadFinal();
 			
@@ -488,6 +488,7 @@ public class agenteTipoAHP extends Agent {
 		}
 		
 		public void showPrioridadesFinal() {
+			System.out.println("AHP " + getImportanciaRelativa().getNombre());
 			for(int i = 0; i < getPrioridadesFinal().size(); i++) {
 				System.out.println("Prioridad num " + i + " con: " + getPrioridadesFinal().get(i));
 			}

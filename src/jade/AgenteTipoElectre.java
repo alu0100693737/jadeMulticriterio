@@ -29,7 +29,8 @@ public class agenteTipoElectre extends Agent {
 	private ArrayList<ArrayList<Integer>> matrizDominanciaDiscordancia;
 
 	private ArrayList<ArrayList<Integer>> matrizDominanciaAgregada;
-
+	
+	private ArrayList<Float> prioridadesFinales;
 
 	private final float umbralConcordancia = 0.55f;
 	private final float umbralDiscordancia = 0.71f;
@@ -78,26 +79,28 @@ public class agenteTipoElectre extends Agent {
 		public void action() {
 			// TODO Auto-generated method stub
 			calcularMatrizDecisionNormalizada();
-			showSolucionElectre();
+			//showSolucionElectre();
 			calcularMatrizDecisionPonderada();
-			System.out.println("\nMatriz Ponderada\n");
-			showSolucionElectre();
+			//System.out.println("\nMatriz Ponderada\n");
+			//showSolucionElectre();
 
 			calcularConjuntoConcordanciaDiscordancia();
-			showConjuntosConcordanciaDiscordancia();
+			//showConjuntosConcordanciaDiscordancia();
 
 			calcularMatrizConcordancia();
 			calcularMatrizDiscordancia();
 
-			showMatricesConcordanciaDiscordancia();
+			//showMatricesConcordanciaDiscordancia();
 
 			calcularMatrizDominanciaConcordancia();
 			calcularMatrizDominanciaDiscordancia();
-			showMatricesDominancia();
+			//showMatricesDominancia();
 
 			calcularMatrizDominanciaAgregada();
-			showMatrizDominanciaAgregada();
+			//showMatrizDominanciaAgregada();
 
+			calcularPrioridadesFinales();
+			
 			block();
 		}
 
@@ -317,6 +320,49 @@ public class agenteTipoElectre extends Agent {
 				getMatrizDominanciaAgregada().add(aux);
 			}
 		}
+		
+		//A cada elemento le asigno un valor 1, los elementos que tengan mayores uniones en la matriz dominancia agregada, se le sumara.
+		/* Ej:
+		 * -1 1 1
+		 * 0 -1 0
+		 * 0 1 -1
+		 * 
+		 * A = 2 + 1
+		 * B = 1
+		 * C = 1 + 1
+		 * Sumamos = 6
+		 * A = 50%
+		 * B = 16%
+		 * C = 33%
+		 */
+		
+		public void calcularPrioridadesFinales() {
+			
+			prioridadesFinales = new ArrayList<Float>();
+			
+			int sumaGlobal = getDatosProblema().getNumAlternativas(); //minimo valor
+			
+			for(int i = 0; i < getMatrizDominanciaAgregada().size(); i++) {
+				
+				int suma = 1; //Prioridad individual
+				for(int j = 0; j < getMatrizDominanciaAgregada().size(); j++) {
+					if((i != j) && (getMatrizDominanciaAgregada().get(i).get(j) == 1)) {
+						suma++; sumaGlobal++;
+					}
+				}
+				getPrioridadesFinales().add((float) suma);
+			}
+			
+			//showPrioridadesFinales();
+			
+			//Normalizamos
+			for(int i = 0; i < getPrioridadesFinales().size(); i++) {
+				getPrioridadesFinales().set(i, getPrioridadesFinales().get(i) / sumaGlobal);
+			}
+			
+			showPrioridadesFinales();
+			
+		}
 
 		//Se ordenaran por el numero de 1s que tengan 
 		public void eliminarMenosFavorables() {
@@ -411,6 +457,14 @@ public class agenteTipoElectre extends Agent {
 			System.out.println();
 		}
 	}
+	
+	public void showPrioridadesFinales() {
+		System.out.println("Electre: " + getImportanciaRelativa().getNombre());
+		System.out.println("Prioridades finales");
+		for(int i = 0; i < getPrioridadesFinales().size(); i++) {
+			System.out.println("Alternativa " + i + " con prioridad " + getPrioridadesFinales().get(i));
+		}
+	}
 
 	public lectorProblema getDatosProblema() {
 		return datosProblema;
@@ -455,6 +509,10 @@ public class agenteTipoElectre extends Agent {
 
 	public ArrayList<ArrayList<Integer>> getMatrizDominanciaAgregada() {
 		return matrizDominanciaAgregada;
+	}
+	
+	public ArrayList<Float> getPrioridadesFinales() {
+		return prioridadesFinales;
 	}
 
 	public ArrayList<Point> getPermutaciones() {

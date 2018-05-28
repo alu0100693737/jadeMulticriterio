@@ -93,9 +93,9 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 
 			//Añadiendo agentes de cada tipo
 			//int num = 1;
-			//addAgenteTipoElectre(1);
-			//addAgenteTipoPromethee(1);
-			addAgenteTipoAHP(1);
+			//addAgenteTipoElectre(5, 0);
+			addAgenteTipoPromethee(5, 0);
+			addAgenteTipoAHP(5, 0);
 			
 			enviarMensajeAgente();
 
@@ -113,7 +113,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 	}
 
 
-	public void addAgenteTipoElectre(int numAgentes) {
+	public void addAgenteTipoElectre(int numAgentes, int inicio) {
 		try {
 			//Si existen prioridades para asignar a todos los agentes
 			if(numAgentes <= getLectorFicheroImportancias().getImportanciasRelativas().size()) {
@@ -123,10 +123,10 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 					//A cada objeto se le pasan los datos del problema y la prioridad que corresponda
 					Object[] args = new Object[2];
 					args[0] = new lectorProblema(getLectorFichero());
-					args[1] = new importanciaRelativaIndividual(getLectorFicheroImportancias().getImportanciasRelativas().get(i));
+					args[1] = new importanciaRelativaIndividual(getLectorFicheroImportancias().getImportanciasRelativas().get(i + inicio));
 					
 					//tercer elemento, parametros
-					String nombre = "Electre" + i + "Procedure";
+					String nombre = "Electre" + (i + inicio) + "Procedure";
 					AgentController prueba  = getContenedorElectre().createNewAgent(nombre, "jade.agenteTipoElectre", args);
 					prueba.start();
 				}
@@ -137,7 +137,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 		}
 	}
 
-	public void addAgenteTipoPromethee(int numAgentes) {
+	public void addAgenteTipoPromethee(int numAgentes, int inicio) {
 		try {
 			//Si existen prioridades para asignar a todos los agentes
 			if(numAgentes <= getLectorFicheroImportancias().getImportanciasRelativas().size()) {
@@ -147,10 +147,10 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 					//A cada objeto se le pasan los datos del problema y la prioridad que corresponda
 					Object[] args = new Object[2];
 					args[0] = new lectorProblema(getLectorFichero());
-					args[1] = new importanciaRelativaIndividual(getLectorFicheroImportancias().getImportanciasRelativas().get(i));
+					args[1] = new importanciaRelativaIndividual(getLectorFicheroImportancias().getImportanciasRelativas().get(i + inicio));
 					
 					//tercer elemento, parametros
-					String nombre = "Promethee" + i + "Procedure";
+					String nombre = "Promethee" + (i + inicio) + "Procedure";
 					AgentController prueba  = getContenedorPromethee().createNewAgent(nombre, "jade.agenteTipoPromethee", args);
 					prueba.start();
 				}
@@ -161,7 +161,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 		}
 	}
 
-	public void addAgenteTipoAHP(int numAgentes) {
+	public void addAgenteTipoAHP(int numAgentes, int inicio) {
 		try {
 			//Si existen prioridades para asignar a todos los agentes
 			if(numAgentes <= getLectorFicheroImportancias().getImportanciasRelativas().size()) {
@@ -171,10 +171,10 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 					//A cada objeto se le pasan los datos del problema y la prioridad que corresponda
 					Object[] args = new Object[2];
 					args[0] = new lectorProblema(getLectorFichero());
-					args[1] = new importanciaRelativaIndividual(getLectorFicheroImportancias().getImportanciasRelativas().get(i));
+					args[1] = new importanciaRelativaIndividual(getLectorFicheroImportancias().getImportanciasRelativas().get(i + inicio));
 					
 					//tercer elemento, parametros
-					String nombre = "AHP" + i + "Procedure";
+					String nombre = "AHP" + (i + inicio) + "Procedure";
 					AgentController prueba  = getContenedorAHP().createNewAgent(nombre, "jade.agenteTipoAHP", args);
 					prueba.start();
 				}

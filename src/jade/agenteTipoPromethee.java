@@ -58,14 +58,14 @@ public class agenteTipoPromethee extends Agent {
 			matrizIndicesPreferencia = new ArrayList<ArrayList<Float>>();
 			matrizIndicesPreferencias();
 			
-			System.out.println("Matriz Indices Preferencias");
-			showMatrizIndicesPreferencia();
+			//System.out.println("Matriz Indices Preferencias");
+			//showMatrizIndicesPreferencia();
 			
-			calculosFlujosPositivos();
+			//calculosFlujosPositivos();
 			
-			calculosFlujosNegativos();
+			//calculosFlujosNegativos();
 			
-			calculosFlujoNeto();
+			calculosFlujoNeto(); //Se calcula el positivo, el negativo y el neto
 			block();
 		}
 
@@ -170,6 +170,7 @@ public class agenteTipoPromethee extends Agent {
 		}
 		
 		public void calculosFlujoNeto() {
+			System.out.println("Promehee " + getImportanciaRelativa().getNombre());
 			for(int i = 0; i < getDatosProblema().getNumAlternativas(); i++) {
 				float aux = flujoPositivoAlternativa(i) - flujoNegativoAlternativa(i);
 					System.out.println("Alternativa: " + i + " con flujo neto: " + aux);
