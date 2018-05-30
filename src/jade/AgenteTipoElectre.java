@@ -3,6 +3,7 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -50,18 +51,7 @@ public class agenteTipoElectre extends Agent {
 				datosProblema = new lectorProblema((lectorProblema) args[0]);
 				importanciaRelativa = new importanciaRelativaIndividual((importanciaRelativaIndividual) args[1]);
 				System.out.println("\n------------------------------------------------------------------\n");
-				addBehaviour(new CyclicBehaviour() {
-
-					@Override
-					public void action() {
-
-						ACLMessage msg = receive();
-						if(msg != null) {
-							System.out.println(msg.getContent());
-						} else
-							block();
-					}
-				});
+		
 				addBehaviour(new comportamientoElectre());
 
 			} else {
@@ -100,6 +90,12 @@ public class agenteTipoElectre extends Agent {
 			//showMatrizDominanciaAgregada();
 
 			calcularPrioridadesFinales();
+			
+			ACLMessage msg= new ACLMessage(ACLMessage.INFORM);
+			//Enviamos el nombre del agente y las prioridades
+			msg.setContent(getName() + "\n" + getPrioridadesFinales());
+			msg.addReceiver(new AID("agenteModerador", AID.ISLOCALNAME));
+			send(msg);
 			
 			block();
 		}

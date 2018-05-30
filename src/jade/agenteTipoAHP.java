@@ -1,6 +1,7 @@
 package jade;
 import java.util.ArrayList;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -38,18 +39,6 @@ public class agenteTipoAHP extends Agent {
 				importanciaRelativa = new importanciaRelativaIndividual((importanciaRelativaIndividual) args[1]);
 				System.out.println("\n------------------------------------------------------------------\n");
 
-				addBehaviour(new CyclicBehaviour() {
-
-					@Override
-					public void action() {
-
-						ACLMessage msg = receive();
-						if(msg != null) {
-							System.out.println(msg.getContent());
-						} else
-							block();
-					}
-				});
 				addBehaviour(new comportamientoAHP());
 
 			} else {
@@ -94,6 +83,13 @@ public class agenteTipoAHP extends Agent {
 			calcularPrioridadFinal();
 			
 			showPrioridadesFinal();
+			
+			ACLMessage msg= new ACLMessage(ACLMessage.INFORM);
+			msg.setContent(getName() + "\n" + getPrioridadesFinal());
+			msg.addReceiver(new AID("agenteModerador", AID.ISLOCALNAME));
+			send(msg);
+			
+			block();
 		}
 
 		/**

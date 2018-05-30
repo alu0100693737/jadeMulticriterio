@@ -1,6 +1,7 @@
 package jade;
 import java.util.ArrayList;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -14,6 +15,7 @@ public class agenteTipoPromethee extends Agent {
 	private importanciaRelativaIndividual importanciaRelativa;
 
 	private ArrayList<ArrayList<Float>> matrizIndicesPreferencia;
+	private ArrayList<Float> prioridadesFinal;
 	
 	protected void setup() { 
 		System.out.println("Creando el agente");
@@ -27,18 +29,6 @@ public class agenteTipoPromethee extends Agent {
 				importanciaRelativa = new importanciaRelativaIndividual((importanciaRelativaIndividual) args[1]);
 				System.out.println("\n------------------------------------------------------------------\n");
 				
-				addBehaviour(new CyclicBehaviour() {
-
-					@Override
-					public void action() {
-
-						ACLMessage msg = receive();
-						if(msg != null) {
-							System.out.println(msg.getContent());
-						} else
-							block();
-					}
-				});
 				addBehaviour(new comportamientoPrometheo());
 
 			} else {
@@ -66,6 +56,12 @@ public class agenteTipoPromethee extends Agent {
 			//calculosFlujosNegativos();
 			
 			calculosFlujoNeto(); //Se calcula el positivo, el negativo y el neto
+			
+			ACLMessage msg= new ACLMessage(ACLMessage.INFORM);
+			msg.setContent(getName() + "\n" + getPrioridadesFinal());
+			msg.addReceiver(new AID("agenteModerador", AID.ISLOCALNAME));
+			send(msg);
+			
 			block();
 		}
 
@@ -170,10 +166,13 @@ public class agenteTipoPromethee extends Agent {
 		}
 		
 		public void calculosFlujoNeto() {
+			prioridadesFinal = new ArrayList<Float>();
+			
 			System.out.println("Promehee " + getImportanciaRelativa().getNombre());
 			for(int i = 0; i < getDatosProblema().getNumAlternativas(); i++) {
 				float aux = flujoPositivoAlternativa(i) - flujoNegativoAlternativa(i);
 					System.out.println("Alternativa: " + i + " con flujo neto: " + aux);
+					getPrioridadesFinal().add(aux);
 			}
 			System.out.println();
 		}
@@ -188,6 +187,10 @@ public class agenteTipoPromethee extends Agent {
 		
 		public ArrayList<ArrayList<Float>> getMatrizIndicesPreferencia() {
 			return matrizIndicesPreferencia;
+		}
+		
+		public ArrayList<Float> getPrioridadesFinal() {
+			return prioridadesFinal;
 		}
 		
 		public void showMatrizIndicesPreferencia() {
