@@ -2,6 +2,7 @@ package jade;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.JOptionPane;
 
@@ -47,10 +48,9 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 	/**
 	 * Variable final que almacena el nombre del fichero que contiene las importancias relativas de los usuarios
 	 */
-	public static final String FICHERO_IMPORTANCIAS_RELATIVAS = "importanciaRelativaPersonalCoches.txt";
+	public static final String FICHERO_IMPORTANCIAS_RELATIVAS = "importanciaRelativaPersonalCoches2.txt";
 	
-	public static final int NUMERO_AGENTES = 5;
-	public static final double CONSENSO_MINIMO = 0.7;
+	public static final int NUMERO_AGENTES = 20;
 	private float consensoActual;
 
 	private static Runtime rt;	
@@ -92,12 +92,10 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 			ahpContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesAHP));
 
 			System.out.println("Agente moderador, ya se han leido los ficheros, añadimos Electre");
-
-			//Añadiendo agentes de cada tipo
-			//NUMERO_AGENTES
-			addAgenteTipoElectre(2, 0);
-			addAgenteTipoPromethee(2, 2);
-			addAgenteTipoAHP(1, 4);
+			
+			addAgenteTipoElectre(NUMERO_AGENTES/3, 0);
+			addAgenteTipoPromethee(NUMERO_AGENTES/3, NUMERO_AGENTES/3);
+			addAgenteTipoAHP(NUMERO_AGENTES - (2 * NUMERO_AGENTES/3 - 1), 2 * NUMERO_AGENTES/3 - 1);
 			
 			//Nos comunicamos con los agentes buscando la solucion individual
 			System.out.println("Moderador!!!");
@@ -130,13 +128,10 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 						}
 						
 						getPrioridadesFinales().add(valores);
-						//System.out.println("\n" + nombre[0] + "\n" + split[1] + "\n" + split[1].substring(1, split[1].length() - 1));
-
-						//JOptionPane.showMessageDialog(null, "Message recibido: " + msg.getContent());
-						
+										
 					} else {
-						System.out.println("Blocking. ");
 						block();
+					
 						System.out.println("Hay un total de " + getNombresAgentes().size() + " que es igual a " + getPrioridadesFinales().size());
 						showDatosPrioridadesFinalesPorAgente();
 						
@@ -147,12 +142,20 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 							for(int i = 0; i < getPrioridadesFinales().size(); i++) {
 								if(getMax(getPrioridadesFinales().get(i)).getX() != getMax(getdecisionFinal()).getX()) {
 									System.out.println("Error en " + getNombresAgentes().get(i));
-									//Realizar cambio
+									//Realizar cambio, nos comunicamos con el agente diciendole que alternativa es el del grupo
+									ACLMessage msg1 = new ACLMessage(ACLMessage.INFORM);
+									msg1.setContent(String.valueOf(getMax(getdecisionFinal()).getX()));
+									msg1.addReceiver(new AID(getNombresAgentes().get(i), AID.ISLOCALNAME));
+									send(msg1);
+									
 								}
 							}
+						} else {
+							System.out.println("HECHO!!!!!");
 						}
 					}
 				}
+				
 			});
 			
 
@@ -283,28 +286,29 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 		System.out.println("Valor " + suma);
 		
 		setConsensoActual(suma);
-		
-		//Mayoria absoluta
-		if(getConsensoActual() >= (NUMERO_AGENTES / 2)) {
+		int aux = 0;
+		//Mayoria 2/3
+		if(getConsensoActual() > (2 * NUMERO_AGENTES / 3)) {
 			
-			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria Absoluta) del " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. \n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
+			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria 2/3) del " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. \n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
 			return true;
 		}
-		//Mayoria simple
-		else if(getConsensoActual() > (NUMERO_AGENTES - getConsensoActual())){ //CONSENSO
-			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria Simple) del " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. \n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
+		//Mayoria absoluta
+		else if(getConsensoActual() > (NUMERO_AGENTES / 2)){ //CONSENSO
+			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria Absoluta) del " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. \n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
 			return false;
 		} 
-		//Regla de la minoría absoluta. Mitad de expertos
-		else if(aplicarMinoria() >= (NUMERO_AGENTES / 4)) {
-			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria Absoluta, por minoria) del " +  ((getConsensoActual() / (float)NUMERO_AGENTES)) + "%. -> " + (getConsensoActual() / (float)(NUMERO_AGENTES / 2)) + "\n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
+		//Regla de la minoría 2/3. Mitad de expertos de forma aleatoria
+		else if((aux = aplicarMinoria()) > (2 * NUMERO_AGENTES / 4 * 3)) {
+			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria 2/3, por minoria) del " +  ((getConsensoActual() / (float)NUMERO_AGENTES)) + "%. -> " + ((float)((float)aux / (float)(NUMERO_AGENTES / 2))) + "%\n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
 			return false;
 		} 
-		//Regla de la minoria relativa. Mitad de expertos
-		else if(aplicarMinoria() >= (NUMERO_AGENTES/2 - getConsensoActual())) {
-			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria Simple, por minoria) del " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. -> " + (getConsensoActual() / (float)(NUMERO_AGENTES / 2)) + " \n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
+		//Regla de la minoria absoluta. Mitad de expertos
+		else if((aux = aplicarMinoria()) > (NUMERO_AGENTES / 4)) {
+			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria Absoluta, por minoria) del " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. -> " + ((float)((float)aux / (float)(NUMERO_AGENTES / 2))) + "%\n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
 			return false;
 		} else {
+			System.out.println("Saliendo");
 			//Debe aplicarse otro procedimiento
 			return false;
 		}
@@ -319,13 +323,30 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 	
 	//Aplicamos la evaluacion a la mitad de los elementos
 	public int aplicarMinoria() {
+		System.out.println("\nPor Minoria \n\n");
+		
+		ArrayList<Integer> minoriasEscogidas = new ArrayList<Integer>();
+		Random rand = new Random();
+		int aux;
+		for(int i = 0; i < NUMERO_AGENTES / 2; i++) {
+			aux = rand.nextInt(NUMERO_AGENTES);
+			while(minoriasEscogidas.contains(aux)) {
+				aux = rand.nextInt(NUMERO_AGENTES);
+			}
+			System.out.println("Añadiendo aux " + aux);
+			minoriasEscogidas.add(aux);
+		}
 		int suma = 0;
-		for(int i = 0; i < getPrioridadesFinales().size(); i += 2) {
-			if(getMax(getPrioridadesFinales().get(i)).getX() == getMax(getdecisionFinal()).getX()) {
-				System.out.println("El primer elemento escogido localmente y globalmente es el mismo en " + i);
+		System.out.println("Prioridades finales " +  getPrioridadesFinales().size());
+		for(int i = 0; i < minoriasEscogidas.size(); i++) {
+			if(getMax(getPrioridadesFinales().get(minoriasEscogidas.get(i))).getX() == getMax(getdecisionFinal()).getX()) {
+				System.out.println("El primer elemento escogido localmente y globalmente es el mismo en " + minoriasEscogidas.get(i));
 				suma += 1;
+			} else {
+				System.out.println("no coincide");
 			}
 		}
+		System.out.println("Minoria vale " + suma);
 		return suma;
 	}
 	
@@ -340,7 +361,9 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 	public void showDatosPrioridadesFinalesPorAgente() {
 		System.out.println("Prioridades finales ");
 		for(int i = 0; i < getNombresAgentes().size(); i++) {
-			System.out.println("Agente " + getNombresAgentes().get(i) + " con los valores: " + getPrioridadesFinales().get(i));
+			System.out.println("Agente " + getNombresAgentes().get(i) + " " + 
+		getLectorFicheroImportancias().getImportanciasRelativas().get(i).getNombre() + 
+		" con los valores: " + getPrioridadesFinales().get(i));
 		}
 	}
 	
@@ -349,6 +372,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 		for(int i = 0; i < getdecisionFinal().size(); i++) {
 			System.out.printf("%.2f  ", getdecisionFinal().get(i));
 		}
+		System.out.println();
 	}
 
 	/**

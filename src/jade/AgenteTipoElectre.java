@@ -98,6 +98,10 @@ public class agenteTipoElectre extends Agent {
 			send(msg);
 			
 			block();
+			ACLMessage msg1 = receive();
+			if(msg1 != null) {
+				System.out.println("Recibido algo");
+			}
 		}
 
 		public void calcularMatrizDecisionNormalizada() {
