@@ -40,6 +40,25 @@ public class agenteTipoAHP extends Agent {
 				System.out.println("\n------------------------------------------------------------------\n");
 
 				addBehaviour(new comportamientoAHP());
+				
+				//Replica
+				addBehaviour(new CyclicBehaviour() {
+					
+					@Override
+					public void action() {
+						// TODO Auto-generated method stub
+						block();
+						
+						ACLMessage msg1 = receive();
+						if(msg1 != null) {
+							System.out.println("Recibido algo" + msg1.getContent());
+						} else {
+							block();
+							System.out.println("Recibido 2");
+						}
+						
+					}
+				});
 
 			} else {
 				System.err.println("Tipos de datos de argumentos erroneo, ERROR");
@@ -90,6 +109,14 @@ public class agenteTipoAHP extends Agent {
 			send(msg);
 			
 			block();
+			
+			ACLMessage msg1 = receive();
+			if(msg1 != null) {
+				System.out.println("Recibido algo");
+			} else {
+				block();
+				System.out.println("Recibido 2");
+			}
 		}
 
 		/**

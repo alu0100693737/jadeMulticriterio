@@ -53,6 +53,25 @@ public class agenteTipoElectre extends Agent {
 				System.out.println("\n------------------------------------------------------------------\n");
 		
 				addBehaviour(new comportamientoElectre());
+				
+				//Replica
+				addBehaviour(new CyclicBehaviour() {
+					
+					@Override
+					public void action() {
+						// TODO Auto-generated method stub
+						block();
+						
+						ACLMessage msg1 = receive();
+						if(msg1 != null) {
+							System.out.println("Recibido algo" + msg1.getContent());
+						} else {
+							block();
+							System.out.println("Recibido 2");
+						}
+						
+					}
+				});
 
 			} else {
 				System.err.println("Tipos de datos de argumentos erroneo, ERROR");
@@ -96,12 +115,7 @@ public class agenteTipoElectre extends Agent {
 			msg.setContent(getName() + "\n" + getPrioridadesFinales());
 			msg.addReceiver(new AID("agenteModerador", AID.ISLOCALNAME));
 			send(msg);
-			
-			block();
-			ACLMessage msg1 = receive();
-			if(msg1 != null) {
-				System.out.println("Recibido algo");
-			}
+	
 		}
 
 		public void calcularMatrizDecisionNormalizada() {
