@@ -72,7 +72,7 @@ public class lectorProblema {
 		valoresAtributos = new ArrayList<ArrayList<Float>>(((lectorProblema) valor).getArrayValoresAtributos());
 		nombreAtributos = new ArrayList<String>(((lectorProblema) valor).getArrayNombreAtributos());
 		
-		showFichero();
+		//showFichero();
 	}
 
 	/**

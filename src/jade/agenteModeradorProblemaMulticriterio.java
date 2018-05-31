@@ -91,14 +91,14 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 			PrometheeContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesPromethee));
 			ahpContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesAHP));
 
-			System.out.println("Agente moderador, ya se han leido los ficheros, añadimos Electre");
+			//System.out.println("Agente moderador, ya se han leido los ficheros, añadimos Electre");
 
 			addAgenteTipoElectre(NUMERO_AGENTES/3, 0);
 			addAgenteTipoPromethee(NUMERO_AGENTES/3, NUMERO_AGENTES/3);
 			addAgenteTipoAHP(NUMERO_AGENTES - (2 * NUMERO_AGENTES/3 - 1), 2 * NUMERO_AGENTES/3 - 1);
 
 			//Nos comunicamos con los agentes buscando la solucion individual
-			System.out.println("Moderador!!!");
+			
 			//Inicializamos
 			prioridadesFinales = new ArrayList<ArrayList<Float>>();
 			nombresAgentes = new ArrayList<String>();
@@ -145,7 +145,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 
 										//Realizar cambio, nos comunicamos con el agente diciendole que alternativa es el del grupo
 										ACLMessage msg1 = new ACLMessage(ACLMessage.INFORM);
-										msg1.setContent(String.valueOf("ASCO a") + getNombresAgentes().get(i));
+										msg1.setContent(getMax(getPrioridadesFinales().get(i)).getX() + " " + getMax(getdecisionFinal()).getX() + " " + getNombresAgentes().get(i));
 										msg1.addReceiver(new AID(getNombresAgentes().get(i), AID.ISLOCALNAME));
 										send(msg1);
 									}
@@ -311,6 +311,8 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 			return false;
 		} else {
 			System.out.println("Saliendo");
+			JOptionPane.showMessageDialog(null, "No hay ningun tipo de consenso en primera ronda " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. -> " + ((float)((float)aux / (float)(NUMERO_AGENTES / 2))) + "%\n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
+
 			//Debe aplicarse otro procedimiento
 			return false;
 		}

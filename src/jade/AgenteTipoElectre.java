@@ -42,7 +42,7 @@ public class agenteTipoElectre extends Agent {
 	@Override
 	protected void setup() { 
 
-		System.out.println("\nHola! El agente "+getAID().getName()+" está listo.\n");
+		//System.out.println("\nHola! El agente "+getAID().getName()+" está listo.\n");
 
 		Object[] args = getArguments();         // Obtiene los argumentos dados en la inicialización del comprador
 		if (args != null && args.length == 2) {  // Tiene que haber al menos un argumento
@@ -50,8 +50,7 @@ public class agenteTipoElectre extends Agent {
 
 				datosProblema = new lectorProblema((lectorProblema) args[0]);
 				importanciaRelativa = new importanciaRelativaIndividual((importanciaRelativaIndividual) args[1]);
-				System.out.println("\n------------------------------------------------------------------\n");
-		
+				
 				addBehaviour(new comportamientoElectre());
 				
 				//Replica
@@ -64,10 +63,34 @@ public class agenteTipoElectre extends Agent {
 						
 						ACLMessage msg1 = receive();
 						if(msg1 != null) {
-							System.out.println("Recibido algo" + msg1.getContent());
+							System.out.println("Recibida negociacion " + msg1.getContent());
+							String aux[] = msg1.getContent().split("\\s+");
+							System.out.println("size " + aux.length + " " + aux[0]);
+						
+							//Cambiamos importancias relativas lo posible entre las dos alternativas
+							float diferencia = Math.abs(getImportanciaRelativa().getImportancias().get((int)Float.parseFloat(aux[0])))
+									- getImportanciaRelativa().getImportancias().get((int)Float.parseFloat(aux[1]));
+							
+							System.out.println("Diferencia: " + diferencia);
+							System.out.println("Antes");
+							getImportanciaRelativa().showImportancias();
+							//Si se puede realizar una modificacion sin cambiar mis preferencias personales
+							while(diferencia > 0.2) {
+								getImportanciaRelativa().getImportancias().set(
+										Integer.getInteger(aux[0]), (float) (getImportanciaRelativa().getImportancias().get(Integer.getInteger(aux[0])) - 0.1));
+								getImportanciaRelativa().getImportancias().set(
+										Integer.getInteger(aux[1]), (float) (getImportanciaRelativa().getImportancias().get(Integer.getInteger(aux[1])) + 0.1));
+							}
+							System.out.println("Despues");
+							getImportanciaRelativa().showImportancias();
+							
+						
+							
+							
 						} else {
 							block();
-							System.out.println("Recibido 2");
+							
+							//addBehaviour(new comportamientoElectre());
 						}
 						
 					}
@@ -190,7 +213,7 @@ public class agenteTipoElectre extends Agent {
 			int auxPermutacion = 0;
 
 			matrizConcordancia = new ArrayList<ArrayList<Float>>();
-			System.out.println("Empezando matriz concordancia");
+			//System.out.println("Empezando matriz concordancia");
 			for(int i = 0; i < getDatosProblema().getNumAlternativas(); i++) {
 
 				ArrayList<Float> filaConcordancia = new ArrayList<Float>();
@@ -227,7 +250,7 @@ public class agenteTipoElectre extends Agent {
 			int auxPermutacion = 0;
 
 			matrizDiscordancia = new ArrayList<ArrayList<Float>>();
-			System.out.println("Empezando matriz discordancia");
+			//System.out.println("Empezando matriz discordancia");
 			for(int i = 0; i < getDatosProblema().getNumAlternativas(); i++) {
 
 				ArrayList<Float> filaDiscordancia = new ArrayList<Float>();
@@ -374,7 +397,7 @@ public class agenteTipoElectre extends Agent {
 				getPrioridadesFinales().set(i, getPrioridadesFinales().get(i) / sumaGlobal);
 			}
 			
-			showPrioridadesFinales();
+			//showPrioridadesFinales();
 			
 		}
 

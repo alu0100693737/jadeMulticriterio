@@ -1,6 +1,7 @@
 package jade;
 import java.util.ArrayList;
 
+import jade.agenteTipoElectre.comportamientoElectre;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -28,8 +29,8 @@ public class agenteTipoAHP extends Agent {
 	private ArrayList<Float> prioridadesFinal;
 	
 	protected void setup() { 
-		System.out.println("Creando el agente");
-		System.out.println("\nHola! El agente "+ getAID().getName()+" está listo.\n");
+		//System.out.println("Creando el agente");
+		//System.out.println("\nHola! El agente "+ getAID().getName()+" está listo.\n");
 
 		Object[] args = getArguments();         // Obtiene los argumentos dados en la inicialización del comprador
 		if (args != null && args.length == 2) {  // Tiene que haber al menos un argumento
@@ -37,7 +38,7 @@ public class agenteTipoAHP extends Agent {
 
 				datosProblema = new lectorProblema((lectorProblema) args[0]);
 				importanciaRelativa = new importanciaRelativaIndividual((importanciaRelativaIndividual) args[1]);
-				System.out.println("\n------------------------------------------------------------------\n");
+				//System.out.println("\n------------------------------------------------------------------\n");
 
 				addBehaviour(new comportamientoAHP());
 				
@@ -51,12 +52,35 @@ public class agenteTipoAHP extends Agent {
 						
 						ACLMessage msg1 = receive();
 						if(msg1 != null) {
-							System.out.println("Recibido algo" + msg1.getContent());
+							System.out.println("Recibida negociacion " + msg1.getContent());
+							String aux[] = msg1.getContent().split("\\s+");
+							System.out.println("size " + aux.length + " " + aux[0]);
+						
+							//Cambiamos importancias relativas lo posible entre las dos alternativas
+							float diferencia = Math.abs(getImportanciaRelativa().getImportancias().get((int)Float.parseFloat(aux[0])))
+									- getImportanciaRelativa().getImportancias().get((int)Float.parseFloat(aux[1]));
+							
+							System.out.println("Diferencia: " + diferencia);
+							System.out.println("Antes");
+							getImportanciaRelativa().showImportancias();
+							//Si se puede realizar una modificacion sin cambiar mis preferencias personales
+							while(diferencia > 0.2) {
+								getImportanciaRelativa().getImportancias().set(
+										Integer.getInteger(aux[0]), (float) (getImportanciaRelativa().getImportancias().get(Integer.getInteger(aux[0])) - 0.1));
+								getImportanciaRelativa().getImportancias().set(
+										Integer.getInteger(aux[1]), (float) (getImportanciaRelativa().getImportancias().get(Integer.getInteger(aux[1])) + 0.1));
+							}
+							System.out.println("Despues");
+							getImportanciaRelativa().showImportancias();
+							
+						
+							
+							
 						} else {
 							block();
-							System.out.println("Recibido 2");
+							
+							//addBehaviour(new comportamientoAHP());
 						}
-						
 					}
 				});
 
@@ -73,8 +97,8 @@ public class agenteTipoAHP extends Agent {
 
 		@Override
 		public void action() {
-			System.out.println("Comportamiento Proceso Analitico Jerarquico");
-			System.out.println("Se calcula la matriz de comparacion por pares");
+			//System.out.println("Comportamiento Proceso Analitico Jerarquico");
+			//System.out.println("Se calcula la matriz de comparacion por pares");
 			calcularMatrizComparacionPares();
 
 			//showMatrizComparacionPares();
@@ -101,22 +125,12 @@ public class agenteTipoAHP extends Agent {
 			
 			calcularPrioridadFinal();
 			
-			showPrioridadesFinal();
+			//showPrioridadesFinal();
 			
 			ACLMessage msg= new ACLMessage(ACLMessage.INFORM);
 			msg.setContent(getName() + "\n" + getPrioridadesFinal());
 			msg.addReceiver(new AID("agenteModerador", AID.ISLOCALNAME));
 			send(msg);
-			
-			block();
-			
-			ACLMessage msg1 = receive();
-			if(msg1 != null) {
-				System.out.println("Recibido algo");
-			} else {
-				block();
-				System.out.println("Recibido 2");
-			}
 		}
 
 		/**
@@ -198,7 +212,7 @@ public class agenteTipoAHP extends Agent {
 				getConjuntoSumaPorCriterio().add(suma);
 			}
 
-			showConjuntoSumaPorCriterio();
+			//showConjuntoSumaPorCriterio();
 
 			//Calculando matriz normalizada
 			for(int i = 0; i < getDatosProblema().getNumCriterios(); i++) {
@@ -250,9 +264,9 @@ public class agenteTipoAHP extends Agent {
 			//System.out.println("Max vale " + max + " min " + min);
 			
 			float rango = max - min;
-			System.out.println("Rango de " + rango);
+			//System.out.println("Rango de " + rango);
 			float medida = rango / getDatosProblema().getNumAlternativas();
-			System.out.println("Medida " + medida);
+			//System.out.println("Medida " + medida);
 			for(int i = 0; i < getDatosProblema().getNumAlternativas(); i++) {
 				ArrayList<Float> filaComparacion = new ArrayList<Float>();
 				
@@ -375,7 +389,7 @@ public class agenteTipoAHP extends Agent {
 			conjuntoMatricesAlternativasNormalizada = new ArrayList<ArrayList<ArrayList<Float>>>();
 			
 			for(int i = 0; i < getConjuntoMatricesAlternativas().size(); i++) {
-				System.out.println("\nAlternativa num " + i);
+				//System.out.println("\nAlternativa num " + i);
 				ArrayList<Float> sumasColumnas = new ArrayList<Float>();
 				
 				for(int j = 0; j < getDatosProblema().getNumAlternativas(); j++) {
@@ -384,7 +398,7 @@ public class agenteTipoAHP extends Agent {
 						suma += getConjuntoMatricesAlternativas().get(i).get(k).get(j);
 					}
 					sumasColumnas.add(suma);
-					System.out.println("Valor suma " + suma);
+					//System.out.println("Valor suma " + suma);
 				}
 				
 				ArrayList<ArrayList<Float>> matrizAlternativaNormalizada = new ArrayList<ArrayList<Float>>();
@@ -425,7 +439,7 @@ public class agenteTipoAHP extends Agent {
 		public void calcularPrioridadFinal() {
 			prioridadesFinal = new ArrayList<Float>();
 			for(int i = 0; i < getDatosProblema().getNumAlternativas(); i++) {
-				System.out.println("Alternativa  " + i);;
+				//System.out.println("Alternativa  " + i);;
 				float suma = 0;
 				for(int j = 0; j < getConjuntoMatrizPrioridadesAlternativas().size(); j++) { //mismo valor que num criterios
 					suma += getConjuntoPrioridades().get(j) * getConjuntoMatrizPrioridadesAlternativas().get(j).get(i);

@@ -39,7 +39,7 @@ public class importanciaRelativaIndividual {
 		nombre = ((importanciaRelativaIndividual) datos).getNombre();
 		importancias = new ArrayList<Float>(((importanciaRelativaIndividual) datos).getImportancias());
 		
-		showImportancias();
+		//showImportancias();
 	}
 	
 	/**

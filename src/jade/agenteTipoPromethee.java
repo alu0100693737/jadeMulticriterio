@@ -1,6 +1,7 @@
 package jade;
 import java.util.ArrayList;
 
+import jade.agenteTipoAHP.comportamientoAHP;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -18,8 +19,8 @@ public class agenteTipoPromethee extends Agent {
 	private ArrayList<Float> prioridadesFinal;
 	
 	protected void setup() { 
-		System.out.println("Creando el agente");
-		System.out.println("\nHola! El agente "+ getAID().getName()+" está listo.\n");
+		//System.out.println("Creando el agente");
+		//System.out.println("\nHola! El agente "+ getAID().getName()+" está listo.\n");
 
 		Object[] args = getArguments();         // Obtiene los argumentos dados en la inicialización del comprador
 		if (args != null && args.length == 2) {  // Tiene que haber al menos un argumento
@@ -27,9 +28,8 @@ public class agenteTipoPromethee extends Agent {
 
 				datosProblema = new lectorProblema((lectorProblema) args[0]);
 				importanciaRelativa = new importanciaRelativaIndividual((importanciaRelativaIndividual) args[1]);
-				System.out.println("\n------------------------------------------------------------------\n");
 				
-				addBehaviour(new comportamientoPrometheo());
+				addBehaviour(new comportamientoPromethee());
 				
 				//Replica
 				addBehaviour(new CyclicBehaviour() {
@@ -37,14 +37,35 @@ public class agenteTipoPromethee extends Agent {
 					@Override
 					public void action() {
 						// TODO Auto-generated method stub
-						block();
+						
 						
 						ACLMessage msg1 = receive();
 						if(msg1 != null) {
-							System.out.println("Recibido algo" + msg1.getContent());
+							System.out.println("Recibida negociacion " + msg1.getContent());
+							String aux[] = msg1.getContent().split("\\s+");
+							System.out.println("size " + aux.length + " " + aux[0]);
+						
+							//Cambiamos importancias relativas lo posible entre las dos alternativas
+							float diferencia = Math.abs(getImportanciaRelativa().getImportancias().get((int)Float.parseFloat(aux[0])))
+									- getImportanciaRelativa().getImportancias().get((int)Float.parseFloat(aux[1]));
+							
+							System.out.println("Diferencia: " + diferencia);
+							System.out.println("Antes");
+							getImportanciaRelativa().showImportancias();
+							//Si se puede realizar una modificacion sin cambiar mis preferencias personales
+							while(diferencia > 0.2) {
+								getImportanciaRelativa().getImportancias().set(
+										Integer.getInteger(aux[0]), (float) (getImportanciaRelativa().getImportancias().get(Integer.getInteger(aux[0])) - 0.1));
+								getImportanciaRelativa().getImportancias().set(
+										Integer.getInteger(aux[1]), (float) (getImportanciaRelativa().getImportancias().get(Integer.getInteger(aux[1])) + 0.1));
+							}
+							System.out.println("Despues");
+							getImportanciaRelativa().showImportancias();
+							
 						} else {
 							block();
-							System.out.println("Recibido 2");
+							
+							//addBehaviour(new comportamientoPromethee());
 						}
 						
 					}
@@ -59,11 +80,11 @@ public class agenteTipoPromethee extends Agent {
 			return;
 		}
 	}
-	class comportamientoPrometheo extends OneShotBehaviour {
+	class comportamientoPromethee extends OneShotBehaviour {
 
 		@Override
 		public void action() {
-			System.out.println("Comportamiento");
+			//System.out.println("Comportamiento Promethee");
 			matrizIndicesPreferencia = new ArrayList<ArrayList<Float>>();
 			matrizIndicesPreferencias();
 			
@@ -80,16 +101,6 @@ public class agenteTipoPromethee extends Agent {
 			msg.setContent(getName() + "\n" + getPrioridadesFinal());
 			msg.addReceiver(new AID("agenteModerador", AID.ISLOCALNAME));
 			send(msg);
-			
-			block();
-			
-			ACLMessage msg1 = receive();
-			if(msg1 != null) {
-				System.out.println("Recibido algo");
-			} else {
-				block();
-				System.out.println("Recibido 2");
-			}
 		}
 
 		//se comparan las alternativas mirando para cada par, la funcionII y calculando el indice de preferencia individual
@@ -195,21 +206,13 @@ public class agenteTipoPromethee extends Agent {
 		public void calculosFlujoNeto() {
 			prioridadesFinal = new ArrayList<Float>();
 			
-			System.out.println("Promehee " + getImportanciaRelativa().getNombre());
+			//System.out.println("Promehee " + getImportanciaRelativa().getNombre());
 			for(int i = 0; i < getDatosProblema().getNumAlternativas(); i++) {
 				float aux = flujoPositivoAlternativa(i) - flujoNegativoAlternativa(i);
-					System.out.println("Alternativa: " + i + " con flujo neto: " + aux);
+					//System.out.println("Alternativa: " + i + " con flujo neto: " + aux);
 					getPrioridadesFinal().add(aux);
 			}
-			System.out.println();
-		}
-		
-		public lectorProblema getDatosProblema() {
-			return datosProblema;
-		}
-
-		public importanciaRelativaIndividual getImportanciaRelativa() {
-			return importanciaRelativa;
+			//System.out.println();
 		}
 		
 		public ArrayList<ArrayList<Float>> getMatrizIndicesPreferencia() {
@@ -229,6 +232,14 @@ public class agenteTipoPromethee extends Agent {
 				System.out.println();
 			}
 		}
+	}
+	
+	public lectorProblema getDatosProblema() {
+		return datosProblema;
+	}
+
+	public importanciaRelativaIndividual getImportanciaRelativa() {
+		return importanciaRelativa;
 	}
 	
 	protected void takeDown() { 
