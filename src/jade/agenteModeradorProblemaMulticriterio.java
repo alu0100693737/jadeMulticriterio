@@ -93,9 +93,10 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 
 			//System.out.println("Agente moderador, ya se han leido los ficheros, añadimos Electre");
 
-			addAgenteTipoElectre(NUMERO_AGENTES/3, 0);
-			addAgenteTipoPromethee(NUMERO_AGENTES/3, NUMERO_AGENTES/3);
-			addAgenteTipoAHP(NUMERO_AGENTES - (2 * NUMERO_AGENTES/3 - 1), 2 * NUMERO_AGENTES/3 - 1);
+			addAgenteTipoElectre(NUMERO_AGENTES, 0);
+			//addAgenteTipoElectre(NUMERO_AGENTES/3, 0);
+			//addAgenteTipoPromethee(NUMERO_AGENTES/3, NUMERO_AGENTES/3);
+			//addAgenteTipoAHP(NUMERO_AGENTES - (2 * NUMERO_AGENTES/3 - 1), 2 * NUMERO_AGENTES/3 - 1);
 
 			//Nos comunicamos con los agentes buscando la solucion individual
 			
@@ -141,6 +142,9 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 							if(!calcularMayoria()) {
 								for(int i = 0; i < getPrioridadesFinales().size(); i++) {
 									if(getMax(getPrioridadesFinales().get(i)).getX() != getMax(getdecisionFinal()).getX()) {
+
+										//System.out.println(getNombresAgentes().get(i) + "La individual es en el punto " + getPrioridadesFinales().get(i));
+										//System.out.println("La colectiva es en el punto " + getdecisionFinal());
 										//System.out.println("Error en " + getNombresAgentes().get(i));
 
 										//Realizar cambio, nos comunicamos con el agente diciendole que alternativa es el del grupo
@@ -281,7 +285,8 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 		//Calcula los elementos que tienen la misma primera opcion
 		for(int i = 0; i < getPrioridadesFinales().size(); i++) {
 			if(getMax(getPrioridadesFinales().get(i)).getX() == getMax(getdecisionFinal()).getX()) {
-				System.out.println("El primer elemento escogido localmente y globalmente es el mismo en " + i);
+				
+				System.out.println(getPrioridadesFinales().get(i) + "El primer elemento escogido localmente y globalmente es el mismo en " + i + " " + getdecisionFinal());
 				suma += 1;
 			}
 		}
@@ -327,7 +332,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 
 	//Aplicamos la evaluacion a la mitad de los elementos
 	public int aplicarMinoria() {
-		System.out.println("\nPor Minoria \n\n");
+		//System.out.println("\nPor Minoria \n\n");
 
 		ArrayList<Integer> minoriasEscogidas = new ArrayList<Integer>();
 		Random rand = new Random();
@@ -337,17 +342,17 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 			while(minoriasEscogidas.contains(aux)) {
 				aux = rand.nextInt(NUMERO_AGENTES);
 			}
-			System.out.println("Añadiendo aux " + aux);
+			//System.out.println("Añadiendo aux " + aux);
 			minoriasEscogidas.add(aux);
 		}
 		int suma = 0;
-		System.out.println("Prioridades finales " +  getPrioridadesFinales().size());
+		//System.out.println("Prioridades finales " +  getPrioridadesFinales().size());
 		for(int i = 0; i < minoriasEscogidas.size(); i++) {
 			if(getMax(getPrioridadesFinales().get(minoriasEscogidas.get(i))).getX() == getMax(getdecisionFinal()).getX()) {
-				System.out.println("El primer elemento escogido localmente y globalmente es el mismo en " + minoriasEscogidas.get(i));
+				//System.out.println("El primer elemento escogido localmente y globalmente es el mismo en " + minoriasEscogidas.get(i));
 				suma += 1;
 			} else {
-				System.out.println("no coincide");
+				//System.out.println("no coincide");
 			}
 		}
 		System.out.println("Minoria vale " + suma);

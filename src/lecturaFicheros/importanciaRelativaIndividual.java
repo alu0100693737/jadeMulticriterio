@@ -71,6 +71,11 @@ public class importanciaRelativaIndividual {
 	/**
 	 * Metodo que muestra la información del usuario y sus importancias/pesos
 	 */
+	
+	public void modificarImportanciaRelativa(int index, float valor) {
+		importancias.set(index, valor);
+	}
+	
 	public void showImportancias() {
 		System.out.print("\nNombre: " + getNombre() + " ");
 		for(int i = 0; i < getImportancias().size(); i++) {
