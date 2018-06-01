@@ -63,7 +63,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 	private ArrayList<String> nombresAgentes;
 
 	private ArrayList<Float> decisionFinal;
-
+	private boolean primeraVuelta;
 	/**
 	 * Metodo para la inicializacion del agente moderador
 	 */
@@ -91,55 +91,89 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 			PrometheeContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesPromethee));
 			ahpContainer = getRunTime().createAgentContainer(new ProfileImpl(propertiesAHP));
 
+			primeraVuelta = false;
 			//System.out.println("Agente moderador, ya se han leido los ficheros, añadimos Electre");
 
-			addAgenteTipoElectre(NUMERO_AGENTES, 0);
-			//addAgenteTipoElectre(NUMERO_AGENTES/3, 0);
-			//addAgenteTipoPromethee(NUMERO_AGENTES/3, NUMERO_AGENTES/3);
-			//addAgenteTipoAHP(NUMERO_AGENTES - (2 * NUMERO_AGENTES/3 - 1), 2 * NUMERO_AGENTES/3 - 1);
+			//addAgenteTipoElectre(NUMERO_AGENTES, 0);
+			//addAgenteTipoPromethee(NUMERO_AGENTES, 0);
+			//addAgenteTipoAHP(NUMERO_AGENTES, 0);
+			addAgenteTipoElectre(NUMERO_AGENTES/3, 0);
+			addAgenteTipoPromethee(NUMERO_AGENTES/3, NUMERO_AGENTES/3);
+			addAgenteTipoAHP(NUMERO_AGENTES - (2 * NUMERO_AGENTES/3 - 1), 2 * NUMERO_AGENTES/3 - 1);
 
 			//Nos comunicamos con los agentes buscando la solucion individual
 			
 			//Inicializamos
 			prioridadesFinales = new ArrayList<ArrayList<Float>>();
 			nombresAgentes = new ArrayList<String>();
-
+		
 			addBehaviour(new CyclicBehaviour() {
-
+				
 				@Override
 				public void action() {
 					//Receive the other agent message
 					ACLMessage msg = receive();
 					if(msg != null) {
-
+						
 						String split[] = msg.getContent().split("\\n");
 
 						//Nombre[0] contiene el nombre
 						String nombre[] = split[0].split("@");
-						getNombresAgentes().add(nombre[0]);
-
-						//Añadimos las prioridades
-						ArrayList<Float> valores = new ArrayList<Float>();
-						String aux = split[1].substring(1, split[1].length() - 1);
-						String[] aux2 = aux.split(",\\s*");
-						//System.out.println("Aux " + aux2[0]);
-						//System.out.println("Aux length vale " + aux2.length);
-						for(int i = 0; i < aux2.length; i++) {
-							valores.add(Float.parseFloat(aux2[i]));
+						if(primeraVuelta == false) {
+							
+							
+							
+							getNombresAgentes().add(nombre[0]);
+	
+							//Añadimos las prioridades
+							ArrayList<Float> valores = new ArrayList<Float>();
+							String aux = split[1].substring(1, split[1].length() - 1);
+							String[] aux2 = aux.split(",\\s*");
+							//System.out.println("Aux " + aux2[0]);
+							//System.out.println("Aux length vale " + aux2.length);
+							for(int i = 0; i < aux2.length; i++) {
+								valores.add(Float.parseFloat(aux2[i]));
+							}
+	
+							getPrioridadesFinales().add(valores);
+							
+							//Modificaciones
+						} else {
+												
+							int posnombre = getNombresAgentes().indexOf(nombre[0]);
+							System.out.println("Recibido modificacion de " + nombre[0] + " elemento " + posnombre);
+							
+							ArrayList<Float> valores = new ArrayList<Float>();
+							String aux = split[1].substring(1, split[1].length() - 1);
+							String[] aux2 = aux.split(",\\s*");
+							//System.out.println("Aux " + aux2[0]);
+							//System.out.println("Aux length vale " + aux2.length);
+							for(int i = 0; i < aux2.length; i++) {
+								valores.add(Float.parseFloat(aux2[i]));
+							}
+							System.out.println("Recibido modificacion de " + nombre[0] + " elemento " + posnombre);
+							System.out.println("Antes " + getPrioridadesFinales().get(posnombre) + " Despues " + valores);
+							getPrioridadesFinales().set(posnombre, valores);
 						}
-
-						getPrioridadesFinales().add(valores);
 
 					} else {
 						block();
 						if(getPrioridadesFinales().size() == NUMERO_AGENTES) {
+							if(primeraVuelta == false) {
+								JOptionPane.showMessageDialog(null, "Primera vuelta");
+							} else {
+								JOptionPane.showMessageDialog(null, "Consenso hablando con las personas que estan en desacuerdo");
+							}
+							primeraVuelta = true;
 							System.out.println("Hay un total de " + getNombresAgentes().size() + " que es igual a " + getPrioridadesFinales().size());
 							showDatosPrioridadesFinalesPorAgente();
-
+							
 							calcularDecisionFinal();
-
+							
 							//No se ha encontrado mayoria absoluta, se procede a un consenso
 							if(!calcularMayoria()) {
+								
+								
 								for(int i = 0; i < getPrioridadesFinales().size(); i++) {
 									if(getMax(getPrioridadesFinales().get(i)).getX() != getMax(getdecisionFinal()).getX()) {
 
@@ -154,12 +188,16 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 										send(msg1);
 									}
 								}
+								
 								block();
 							} else {
 								System.out.println("HECHO!!!!!");
 							}
-						} else 
+						} else if (primeraVuelta == true) {
+							System.out.println("Estamos en la ronda de consenso");
+						} else {
 							System.out.println("NO SE HAN LEIDO TODOS LOS MENSAJES");
+						}
 					}
 				}
 			});
@@ -285,25 +323,24 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 		//Calcula los elementos que tienen la misma primera opcion
 		for(int i = 0; i < getPrioridadesFinales().size(); i++) {
 			if(getMax(getPrioridadesFinales().get(i)).getX() == getMax(getdecisionFinal()).getX()) {
-				
 				System.out.println(getPrioridadesFinales().get(i) + "El primer elemento escogido localmente y globalmente es el mismo en " + i + " " + getdecisionFinal());
 				suma += 1;
 			}
 		}
+		
 		System.out.println("Valor " + suma);
 
 		setConsensoActual(suma);
 		int aux = 0;
 		//Mayoria 2/3
 		if(getConsensoActual() > (2 * NUMERO_AGENTES / 3)) {
-
 			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria 2/3) del " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. \n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
 			return true;
 		}
 		//Mayoria absoluta
 		else if(getConsensoActual() > (NUMERO_AGENTES / 2)){ //CONSENSO
 			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria Absoluta) del " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. \n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
-			return false;
+			return true;
 		} 
 		//Regla de la minoría 2/3. Mitad de expertos de forma aleatoria
 		else if((aux = aplicarMinoria()) > (2 * NUMERO_AGENTES / 4 * 3)) {
@@ -316,7 +353,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 			return false;
 		} else {
 			System.out.println("Saliendo");
-			JOptionPane.showMessageDialog(null, "No hay ningun tipo de consenso en primera ronda " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. -> " + ((float)((float)aux / (float)(NUMERO_AGENTES / 2))) + "%\n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
+			JOptionPane.showMessageDialog(null, "No hay ningun tipo de consenso" +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. -> " + ((float)((float)aux / (float)(NUMERO_AGENTES / 2))) + "%\n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
 
 			//Debe aplicarse otro procedimiento
 			return false;
@@ -324,16 +361,9 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 
 	}
 
-	public void aplicarConsenso() {
-		//Entre los que estan en desacuerdo, que cambien sus importancias relativas sin cambiar de opinion entre su decision primera y la del grupo
-
-
-	}
-
 	//Aplicamos la evaluacion a la mitad de los elementos
 	public int aplicarMinoria() {
 		//System.out.println("\nPor Minoria \n\n");
-
 		ArrayList<Integer> minoriasEscogidas = new ArrayList<Integer>();
 		Random rand = new Random();
 		int aux;

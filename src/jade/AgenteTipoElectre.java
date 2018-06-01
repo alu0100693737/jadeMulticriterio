@@ -78,20 +78,17 @@ public class agenteTipoElectre extends Agent {
 							//Si se puede realizar una modificacion sin cambiar mis preferencias personales
 							while((diferencia > 0.2f) && (importanciaindividual > 0.1f)) {
 								//System.out.println("Importancias antes " + importanciagrupo + " " + importanciaindividual);
-
 								importanciagrupo -= 0.1f;
 								importanciaindividual += 0.1f;
 								diferencia -= 0.2f;
 								
 								//System.out.println("Importancias despues " + importanciagrupo + " " + importanciaindividual);
-
-					
 							}
 							if(diferencia != diferenciaaux) {
 								System.out.println("Se ha producido un cambio en " + getImportanciaRelativa().getNombre() + " " + aux[2]);
 								System.out.println("Antes");
 								getImportanciaRelativa().showImportancias();
-								showPrioridadesFinales();
+								//showPrioridadesFinales();
 								getImportanciaRelativa().modificarImportanciaRelativa((int)Float.parseFloat(aux[1]), 
 										importanciagrupo);
 								
@@ -123,7 +120,8 @@ public class agenteTipoElectre extends Agent {
 								//showMatrizDominanciaAgregada();
 
 								calcularPrioridadesFinales();
-								showPrioridadesFinales();
+								
+								//showPrioridadesFinales();
 								
 								ACLMessage msg= new ACLMessage(ACLMessage.INFORM);
 								//Enviamos el nombre del agente y las prioridades
