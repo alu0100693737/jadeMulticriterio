@@ -61,6 +61,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 
 	private ArrayList<ArrayList<Float>> prioridadesFinales;
 	private ArrayList<String> nombresAgentes;
+	private ArrayList<String> nombresPersonales;
 
 	private ArrayList<Float> decisionFinal;
 	private boolean primeraVuelta;
@@ -102,51 +103,59 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 			addAgenteTipoAHP(NUMERO_AGENTES - (2 * NUMERO_AGENTES/3 - 1), 2 * NUMERO_AGENTES/3 - 1);
 
 			//Nos comunicamos con los agentes buscando la solucion individual
-			
+
 			//Inicializamos
 			prioridadesFinales = new ArrayList<ArrayList<Float>>();
 			nombresAgentes = new ArrayList<String>();
-		
+			nombresPersonales = new ArrayList<String>();
+
 			addBehaviour(new CyclicBehaviour() {
-				
+
 				@Override
 				public void action() {
 					//Receive the other agent message
 					ACLMessage msg = receive();
 					if(msg != null) {
-						
+
 						String split[] = msg.getContent().split("\\n");
+						//for(int i = 0; i < split.length; i++) 
+						//	System.out.println("SPLIT " + split[i]);
+
+
 
 						//Nombre[0] contiene el nombre
 						String nombre[] = split[0].split("@");
 						if(primeraVuelta == false) {
-							
-							
-							
+
+
+
 							getNombresAgentes().add(nombre[0]);
-	
+
 							//Añadimos las prioridades
 							ArrayList<Float> valores = new ArrayList<Float>();
-							String aux = split[1].substring(1, split[1].length() - 1);
+							String aux = split[2].substring(1, split[2].length() - 1);
 							String[] aux2 = aux.split(",\\s*");
+
 							//System.out.println("Aux " + aux2[0]);
 							//System.out.println("Aux length vale " + aux2.length);
 							for(int i = 0; i < aux2.length; i++) {
 								valores.add(Float.parseFloat(aux2[i]));
 							}
-	
+							System.out.println("COGIDO " + nombre[0] + " " + split[1] + " " + valores);
+							getNombrePersonales().add(split[1]);
+
 							getPrioridadesFinales().add(valores);
-							
+
 							//Modificaciones
 						} else {
-												
+
 							int posnombre = getNombresAgentes().indexOf(nombre[0]);
 							System.out.println("Recibido modificacion de " + nombre[0] + " elemento " + posnombre);
-							
+
 							ArrayList<Float> valores = new ArrayList<Float>();
-							String aux = split[1].substring(1, split[1].length() - 1);
+							String aux = split[2].substring(1, split[2].length() - 1);
 							String[] aux2 = aux.split(",\\s*");
-							//System.out.println("Aux " + aux2[0]);
+
 							//System.out.println("Aux length vale " + aux2.length);
 							for(int i = 0; i < aux2.length; i++) {
 								valores.add(Float.parseFloat(aux2[i]));
@@ -167,13 +176,53 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 							primeraVuelta = true;
 							System.out.println("Hay un total de " + getNombresAgentes().size() + " que es igual a " + getPrioridadesFinales().size());
 							showDatosPrioridadesFinalesPorAgente();
-							
+
 							calcularDecisionFinal();
-							
+
 							//No se ha encontrado mayoria absoluta, se procede a un consenso
 							if(!calcularMayoria()) {
-								
-								
+
+								//Se calcula las importancias relativas medias de todos los que estan de acuerdo
+								ArrayList<Float> importanciasRelativasConjuntas = new ArrayList<Float>();
+								for(int i = 0; i < getLectorFicheroImportancias().getImportanciasRelativas().get(i).getImportancias().size(); i++) {
+									importanciasRelativasConjuntas.add(0.0f);
+								}
+
+								int suma = 0;
+								//Miramos las que esten de acuerdo
+								for(int i = 0; i < getPrioridadesFinales().size(); i++) {
+									if(getMax(getPrioridadesFinales().get(i)).getX() == getMax(getdecisionFinal()).getX()) {
+										//Sumamos la importancia relativa del elemento igual, buscamos por nombre
+										//System.out.println("SEE " + getNombrePersonales().get(i));
+										for(int k = 0; k < getLectorFicheroImportancias().getImportanciasRelativas().size(); k++) {
+											//System.out.println(getLectorFicheroImportancias().getImportanciasRelativas().get(k).getNombre());
+											if(getNombrePersonales().get(i).equals(getLectorFicheroImportancias().getImportanciasRelativas().get(k).getNombre())) {
+												//System.out.println("Nombre YYY" + getNombrePersonales().get(i));
+												for(int j = 0; j < getLectorFicheroImportancias().getImportanciasRelativas().get(i).getImportancias().size(); j++) {
+													importanciasRelativasConjuntas.set(
+															j, 
+															importanciasRelativasConjuntas.get(j) + 
+															getLectorFicheroImportancias().getImportanciasRelativas().get(k).getImportancias().get(j));
+												}
+												System.out.println(getLectorFicheroImportancias().getImportanciasRelativas().get(k).getImportancias());//System.out.println("Sumando " + getLectorFicheroImportancias().getImportanciasRelativas().get(i).getImportancias().get(j));
+
+												suma += 1;
+											}
+										}
+									}
+								}
+
+
+								System.out.println("Estan de acuerdo " + suma + " personas" + importanciasRelativasConjuntas);
+
+								for(int i = 0; i < getLectorFicheroImportancias().getImportanciasRelativas().get(i).getImportancias().size(); i++) {
+									importanciasRelativasConjuntas.set(i, importanciasRelativasConjuntas.get(i) / suma);
+								}
+
+								System.out.println("Importancias relativas conjuntas, calculo moderador");
+								System.out.println(importanciasRelativasConjuntas);
+
+								//Se comunica a los que no estan de acuerdo cual es la importancia relativa media de los que estan de acuerdo para intentar modificarlos sin cambiar su criterio
 								for(int i = 0; i < getPrioridadesFinales().size(); i++) {
 									if(getMax(getPrioridadesFinales().get(i)).getX() != getMax(getdecisionFinal()).getX()) {
 
@@ -183,12 +232,13 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 
 										//Realizar cambio, nos comunicamos con el agente diciendole que alternativa es el del grupo
 										ACLMessage msg1 = new ACLMessage(ACLMessage.INFORM);
-										msg1.setContent(getMax(getPrioridadesFinales().get(i)).getX() + " " + getMax(getdecisionFinal()).getX() + " " + getNombresAgentes().get(i));
+										//Enviamos importancias relativas del grupo
+										msg1.setContent(importanciasRelativasConjuntas.toString());
 										msg1.addReceiver(new AID(getNombresAgentes().get(i), AID.ISLOCALNAME));
 										send(msg1);
 									}
 								}
-								
+
 								block();
 							} else {
 								System.out.println("HECHO!!!!!");
@@ -327,7 +377,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 				suma += 1;
 			}
 		}
-		
+
 		System.out.println("Valor " + suma);
 
 		setConsensoActual(suma);
@@ -335,12 +385,12 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 		//Mayoria 2/3
 		if(getConsensoActual() > (2 * NUMERO_AGENTES / 3)) {
 			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria 2/3) del " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. \n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
-			return true;
+			return false;
 		}
 		//Mayoria absoluta
 		else if(getConsensoActual() > (NUMERO_AGENTES / 2)){ //CONSENSO
 			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria Absoluta) del " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. \n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
-			return true;
+			return false;
 		} 
 		//Regla de la minoría 2/3. Mitad de expertos de forma aleatoria
 		else if((aux = aplicarMinoria()) > (2 * NUMERO_AGENTES / 4 * 3)) {
@@ -400,8 +450,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 	public void showDatosPrioridadesFinalesPorAgente() {
 		System.out.println("Prioridades finales ");
 		for(int i = 0; i < getNombresAgentes().size(); i++) {
-			System.out.println("Agente " + getNombresAgentes().get(i) + " " + 
-					getLectorFicheroImportancias().getImportanciasRelativas().get(i).getNombre() + 
+			System.out.println("Agente " + getNombresAgentes().get(i) + " " + getNombrePersonales().get(i) + " " + 
 					" con los valores: " + getPrioridadesFinales().get(i));
 		}
 	}
@@ -470,13 +519,20 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 		return nombresAgentes;
 	}
 
+	/**
+	 * Metodo que devuelve los nombres personales asociados a las prioridades finales
+	 * @return
+	 */
+	public ArrayList<String> getNombrePersonales() {
+		return nombresPersonales;
+	}
+
 
 	public ArrayList<Float> getdecisionFinal() {
 		return decisionFinal;
 	}
 	/**
 	 * Metodo que devuelve el RunTime rt, ejecucion de agentes
-	 * @return Runtime
 	 */
 	public static Runtime getRunTime() {
 		return rt;

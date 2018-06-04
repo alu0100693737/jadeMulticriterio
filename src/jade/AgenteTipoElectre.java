@@ -2,6 +2,7 @@ package jade;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import jade.core.AID;
 import jade.core.Agent;
@@ -31,7 +32,7 @@ public class agenteTipoElectre extends Agent {
 	private ArrayList<ArrayList<Integer>> matrizDominanciaDiscordancia;
 
 	private ArrayList<ArrayList<Integer>> matrizDominanciaAgregada;
-	
+
 	private ArrayList<Float> prioridadesFinales;
 
 	private final float umbralConcordancia = 0.55f;
@@ -39,6 +40,8 @@ public class agenteTipoElectre extends Agent {
 
 	private float[] vector; 
 	private ArrayList<Point> permutaciones;
+	
+	public final float precision = 0.20f; //Precision acercamiento consenso, cuanto más bajo mayor consenso
 
 	@Override
 	protected void setup() { 
@@ -51,53 +54,38 @@ public class agenteTipoElectre extends Agent {
 
 				datosProblema = new lectorProblema((lectorProblema) args[0]);
 				importanciaRelativa = new importanciaRelativaIndividual((importanciaRelativaIndividual) args[1]);
-				
+
 				addBehaviour(new comportamientoElectre());
-				
+
 				//Replica
 				addBehaviour(new CyclicBehaviour() {
-					
+
 					@Override
 					public void action() {
 						// TODO Auto-generated method stub
 						block();
-						
+
 						ACLMessage msg1 = receive();
 						if(msg1 != null) {
 							System.out.println("Recibida negociacion " + msg1.getContent());
-							String aux[] = msg1.getContent().split("\\s+");
-							//System.out.println("size " + aux.length + " " + aux[0]);
-						
-							//Cambiamos importancias relativas lo posible entre las dos alternativas
-							float diferencia = Math.abs(getImportanciaRelativa().getImportancias().get((int)Float.parseFloat(aux[0]))
-									- getImportanciaRelativa().getImportancias().get((int)Float.parseFloat(aux[1])));
-							float importanciaindividual = getImportanciaRelativa().getImportancias().get((int)Float.parseFloat(aux[0]));
-							float importanciagrupo = getImportanciaRelativa().getImportancias().get((int)Float.parseFloat(aux[1]));
-							float diferenciaaux = diferencia;
-							
-							//Si se puede realizar una modificacion sin cambiar mis preferencias personales
-							while((diferencia > 0.2f) && (importanciaindividual > 0.1f)) {
-								//System.out.println("Importancias antes " + importanciagrupo + " " + importanciaindividual);
-								importanciagrupo -= 0.1f;
-								importanciaindividual += 0.1f;
-								diferencia -= 0.2f;
-								
-								//System.out.println("Importancias despues " + importanciagrupo + " " + importanciaindividual);
+							String aux = msg1.getContent().substring(1, msg1.getContent().length() - 2);
+
+							String aux2[] = aux.split(",\\s+");
+
+							ArrayList<Float> aux3 = new ArrayList<Float>();
+							for(int i = 0; i < aux2.length; i++) {
+								aux3.add(Float.parseFloat(aux2[i]));
 							}
-							if(diferencia != diferenciaaux) {
-								System.out.println("Se ha producido un cambio en " + getImportanciaRelativa().getNombre() + " " + aux[2]);
-								System.out.println("Antes");
-								getImportanciaRelativa().showImportancias();
-								//showPrioridadesFinales();
-								getImportanciaRelativa().modificarImportanciaRelativa((int)Float.parseFloat(aux[1]), 
-										importanciagrupo);
-								
-								getImportanciaRelativa().modificarImportanciaRelativa((int)Float.parseFloat(aux[0]), 
-										importanciaindividual);
-									
-								System.out.println("Despues");
-								getImportanciaRelativa().showImportancias();
-								
+
+							System.out.println("Antes Nombre " + getImportanciaRelativa().getNombre() + " " + getImportanciaRelativa().getImportancias());
+
+							modificarImportanciasRelativas(aux3);
+							System.out.println("Despues Nombre " + getImportanciaRelativa().getNombre() + " " + getImportanciaRelativa().getImportancias());
+
+
+							//conversionImportanciasRelativas()//Cambiamos importancias relativas lo posible entre las dos alternativas
+							
+
 								calcularMatrizDecisionNormalizada();
 								//showSolucionElectre();
 								calcularMatrizDecisionPonderada();
@@ -120,26 +108,21 @@ public class agenteTipoElectre extends Agent {
 								//showMatrizDominanciaAgregada();
 
 								calcularPrioridadesFinales();
-								
+
 								//showPrioridadesFinales();
-								
+
 								ACLMessage msg= new ACLMessage(ACLMessage.INFORM);
 								//Enviamos el nombre del agente y las prioridades
-								msg.setContent(getName() + "\n" + getPrioridadesFinales());
+								msg.setContent(getName() + "\n" + getImportanciaRelativa().getNombre() + "\n" + getPrioridadesFinales());
+
 								msg.addReceiver(new AID("agenteModerador", AID.ISLOCALNAME));
 								send(msg);
-								
+
 							} else {
 								block();
-			
+
 							}
-							
-						} else {
-							block();
-							
-							
-						}
-						
+
 					}
 				});
 
@@ -179,19 +162,189 @@ public class agenteTipoElectre extends Agent {
 			//showMatrizDominanciaAgregada();
 
 			calcularPrioridadesFinales();
-			
+
 			ACLMessage msg= new ACLMessage(ACLMessage.INFORM);
 			//Enviamos el nombre del agente y las prioridades
-			msg.setContent(getName() + "\n" + getPrioridadesFinales());
+			msg.setContent(getName() + "\n" + getImportanciaRelativa().getNombre() + "\n" + getPrioridadesFinales());
 			msg.addReceiver(new AID("agenteModerador", AID.ISLOCALNAME));
 			send(msg);
-	
+
 		}
 
 	}
 
 	protected void takeDown() { 
 		System.out.println("Eliminando el agente");
+	}
+
+	public void modificarImportanciasRelativas(ArrayList<Float> importanciasGrupo) {
+	
+		//getImportanciaRelativa().showImportancias();
+
+
+		for(int i = 0; i < getDatosProblema().getNumCriterios(); i++) {
+			//System.out.println("Num " + i + " " + getImportanciaRelativa().getNombre());
+			//0.5 a 0.1 = 0.4 descendemos y sumamos en el resto si se puede de forma equilibrada
+			//System.out.println("Mayores");
+			//Comprobamos que se puede modificar ese valor sin suponer un cambio de prioridad
+			while(getImportanciaRelativa().getImportancias().get(i) - importanciasGrupo.get(i) >= (2 * precision)) {
+				//System.out.println(getImportanciaRelativa().getImportancias().get(i) + "  - " +  importanciasGrupo.get(i));
+				//Comprobamos si podemos modificar los demas valores
+				//System.out.println("Mayores");
+				float aux = precision / (getDatosProblema().getNumCriterios() - 1);
+				//System.out.println("Aux vale " + aux);
+				boolean sepuede = true; 
+
+				for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
+					if(i != j) {
+						if(Math.abs(getImportanciaRelativa().getImportancias().get(i) - importanciasGrupo.get(i)) <= (2 * aux)) {
+
+							//System.out.println("Fallo en " + getImportanciaRelativa().getImportancias().get(i) + " - " + importanciasGrupo.get(i));
+							sepuede = false;
+
+						}
+					}
+				}
+
+				if(sepuede == true) {
+					//Creo y asigno 0
+					ArrayList<Float> nueva = new ArrayList<Float>();
+					for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
+						nueva.add(0.0f);
+					}
+
+					//Asigno los futuros valores
+					for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
+						if(i != j) {
+
+							//System.out.println("ponemos en " + j + " valor " + getImportanciaRelativa().getImportancias().get(j) + aux);
+							nueva.set(j, getImportanciaRelativa().getImportancias().get(j) + aux);
+						}
+					}
+					nueva.set(i, getImportanciaRelativa().getImportancias().get(i) - precision);
+					//System.out.println("***************************************************\n");
+					//System.out.println("Actuales " + getImportanciaRelativa().getImportancias());
+					//System.out.println("nueva " +  nueva);
+					
+					//Compruebo que no han cambiado las prioridades de cada uno de los criterios
+					for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
+						if( getPosMAx(getImportanciaRelativa().getImportancias(), j) != getPosMAx(nueva, j)) {
+							sepuede = false;
+						}
+						//System.out.println("Max de j  " + j + " " + getPosMAx(getImportanciaRelativa().getImportancias(), j) + " " + getPosMAx(nueva, j));
+					}
+
+					//si cumple las especificaciones
+					if(sepuede) {
+						//System.out.println("Se puede");
+						for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
+							if(i != j) {
+								//System.out.println("ponemos en " + j + " valor " + getImportanciaRelativa().getImportancias().get(j) + aux);
+								getImportanciaRelativa().getImportancias().set(j, getImportanciaRelativa().getImportancias().get(j) + aux);
+							}
+						}
+						getImportanciaRelativa().getImportancias().set(i, getImportanciaRelativa().getImportancias().get(i) - precision);
+						//getImportanciaRelativa().showImportancias();
+					} else {
+						break;
+					}
+				}
+			}
+
+			//0.1 a 0.4 = -0.4 descendemos y sumamos en el resto si se puede de forma equilibrada
+			//System.out.println("Menores");
+
+			//Comprobamos que se puede modificar ese valor sin suponer un cambio de prioridad
+			while(getImportanciaRelativa().getImportancias().get(i) - importanciasGrupo.get(i) <= -(2 * precision)) {
+				//System.out.println("Menores");
+				//System.out.println(getImportanciaRelativa().getImportancias().get(i) + "  - " +  importanciasGrupo.get(i));
+				//Comprobamos si podemos modificar los demas valores
+				float aux = precision / (getDatosProblema().getNumCriterios() - 1);
+				//System.out.println("Aux vale " + aux);
+				boolean sepuede = true; 
+				for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
+					if(i != j) {
+						if(Math.abs(getImportanciaRelativa().getImportancias().get(i) - importanciasGrupo.get(i)) <= (2 * aux)) {
+
+							//System.out.println("Fallo en " + getImportanciaRelativa().getImportancias().get(i) + " - " + importanciasGrupo.get(i));
+							sepuede = false;
+
+						}
+					}
+				}
+
+				if(sepuede == true) {
+					//Creo y asigno 0
+					ArrayList<Float> nueva = new ArrayList<Float>();
+					for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
+						nueva.add(0.0f);
+					}
+
+					//Asigno los futuros valores
+					for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
+						if(i != j) {
+
+							//System.out.println("ponemos en " + j + " valor " + getImportanciaRelativa().getImportancias().get(j) + aux);
+							nueva.set(j, getImportanciaRelativa().getImportancias().get(j) - aux);
+						}
+					}
+					nueva.set(i, getImportanciaRelativa().getImportancias().get(i) + precision);
+					
+					//System.out.println("Actuales " + getImportanciaRelativa().getImportancias());
+					//System.out.println("nueva " +  nueva);
+					
+					//Compruebo que no han cambiado las prioridades de cada uno de los criterios
+					for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
+						if( getPosMAx(getImportanciaRelativa().getImportancias(), j) != getPosMAx(nueva, j)) {
+							sepuede = false;
+							System.out.println("NO SE PUEDE; PROHIBIDOOO" + getImportanciaRelativa().getNombre());
+							break;
+						}
+						//System.out.println("Max de j  " + j + " " + getPosMAx(getImportanciaRelativa().getImportancias(), j) + " " + getPosMAx(nueva, j));
+					}
+
+					if(sepuede) {
+						//System.out.println("Se puede");
+						for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
+							if(i != j) {
+								//System.out.println("ponemos en " + j + " valor " + getImportanciaRelativa().getImportancias().get(j) + " menos "+ aux);
+								getImportanciaRelativa().getImportancias().set(j, getImportanciaRelativa().getImportancias().get(j) - aux);
+							}
+						}
+						getImportanciaRelativa().getImportancias().set(i, getImportanciaRelativa().getImportancias().get(i) + precision);
+						//getImportanciaRelativa().showImportancias();
+					} else {
+						break;
+					}
+				}
+			}
+		}
+
+	}
+
+	/**
+	 * Devuelve el valor que ocupa en un array de mayor a menor
+	 */
+	public int getPosMAx(ArrayList<Float> arrayoriginal, int pos) {
+		ArrayList<Float>array = new ArrayList<Float>(arrayoriginal);
+		//System.out.println("Elemento " + pos + " de " + arrayoriginal);
+		//System.out.println("Pos " + pos + " deberia " + Collections.max(array) + " " + array.indexOf(Collections.max(array)));
+		int valor = 0;
+		for(int i = 0; i < getImportanciaRelativa().getImportancias().size(); i++) {
+			if(pos == array.indexOf(Collections.max(array))) {
+				//System.out.println("Encontrado mayor en Pos ranking " + valor + " deberia " + Collections.max(array) + " pos array" + array.indexOf(Collections.max(array)));
+
+				return valor;
+			} else {
+				valor += 1;
+				array.remove(array.indexOf(Collections.max(array)));
+				//System.out.println("PRueba " + array);
+				//System.out.println("HEmos eliminado el mayor");
+				//System.out.println("array " + array);
+				//System.out.println("***********************************\n");
+			}
+		}
+		return valor;
 	}
 
 	public void calcularMatrizDecisionNormalizada() {
@@ -405,12 +558,12 @@ public class agenteTipoElectre extends Agent {
 						aux.add(0);
 				} else 
 					aux.add(-1);
-				
+
 			}
 			getMatrizDominanciaAgregada().add(aux);
 		}
 	}
-	
+
 	//A cada elemento le asigno un valor 1, los elementos que tengan mayores uniones en la matriz dominancia agregada, se le sumara.
 	/* Ej:
 	 * -1 1 1
@@ -425,15 +578,15 @@ public class agenteTipoElectre extends Agent {
 	 * B = 16%
 	 * C = 33%
 	 */
-	
+
 	public void calcularPrioridadesFinales() {
-		
+
 		prioridadesFinales = new ArrayList<Float>();
-		
+
 		int sumaGlobal = getDatosProblema().getNumAlternativas(); //minimo valor
-		
+
 		for(int i = 0; i < getMatrizDominanciaAgregada().size(); i++) {
-			
+
 			int suma = 1; //Prioridad individual
 			for(int j = 0; j < getMatrizDominanciaAgregada().size(); j++) {
 				if((i != j) && (getMatrizDominanciaAgregada().get(i).get(j) == 1)) {
@@ -442,16 +595,16 @@ public class agenteTipoElectre extends Agent {
 			}
 			getPrioridadesFinales().add((float) suma);
 		}
-		
+
 		//showPrioridadesFinales();
-		
+
 		//Normalizamos
 		for(int i = 0; i < getPrioridadesFinales().size(); i++) {
 			getPrioridadesFinales().set(i, getPrioridadesFinales().get(i) / sumaGlobal);
 		}
-		
+
 		//showPrioridadesFinales();
-		
+
 	}
 
 	//SHOWS
@@ -536,7 +689,7 @@ public class agenteTipoElectre extends Agent {
 			System.out.println();
 		}
 	}
-	
+
 	public void showPrioridadesFinales() {
 		System.out.println("Electre: " + getImportanciaRelativa().getNombre());
 		System.out.println("Prioridades finales");
@@ -589,7 +742,7 @@ public class agenteTipoElectre extends Agent {
 	public ArrayList<ArrayList<Integer>> getMatrizDominanciaAgregada() {
 		return matrizDominanciaAgregada;
 	}
-	
+
 	public ArrayList<Float> getPrioridadesFinales() {
 		return prioridadesFinales;
 	}
