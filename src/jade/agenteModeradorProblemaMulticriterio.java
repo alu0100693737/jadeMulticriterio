@@ -95,9 +95,9 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 			primeraVuelta = false;
 			//System.out.println("Agente moderador, ya se han leido los ficheros, añadimos Electre");
 
-			//addAgenteTipoElectre(NUMERO_AGENTES, 0);
-			//addAgenteTipoPromethee(NUMERO_AGENTES, 0);
-			//addAgenteTipoAHP(NUMERO_AGENTES, 0);
+			//addAgenteTipoElectre(NUMERO_AGENTES/2, 0);
+			//addAgenteTipoPromethee(NUMERO_AGENTES/2, 0);
+			//addAgenteTipoAHP(NUMERO_AGENTES/2, NUMERO_AGENTES/2);
 			addAgenteTipoElectre(NUMERO_AGENTES/3, 0);
 			addAgenteTipoPromethee(NUMERO_AGENTES/3, NUMERO_AGENTES/3);
 			addAgenteTipoAHP(NUMERO_AGENTES - (2 * NUMERO_AGENTES/3 - 1), 2 * NUMERO_AGENTES/3 - 1);
@@ -141,7 +141,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 							for(int i = 0; i < aux2.length; i++) {
 								valores.add(Float.parseFloat(aux2[i]));
 							}
-							System.out.println("COGIDO " + nombre[0] + " " + split[1] + " " + valores);
+							System.out.println("-> " + nombre[0] + " " + split[1] + " " + valores);
 							getNombrePersonales().add(split[1]);
 
 							getPrioridadesFinales().add(valores);
@@ -210,6 +210,7 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 											}
 										}
 									}
+								
 								}
 
 

@@ -41,7 +41,7 @@ public class agenteTipoElectre extends Agent {
 	private float[] vector; 
 	private ArrayList<Point> permutaciones;
 	
-	public final float precision = 0.20f; //Precision acercamiento consenso, cuanto más bajo mayor consenso
+	public final float precision = 0.2f; //Precision acercamiento consenso, cuanto más bajo mayor consenso
 
 	@Override
 	protected void setup() { 
@@ -67,7 +67,7 @@ public class agenteTipoElectre extends Agent {
 
 						ACLMessage msg1 = receive();
 						if(msg1 != null) {
-							System.out.println("Recibida negociacion " + msg1.getContent());
+							//System.out.println("Recibida negociacion " + msg1.getContent());
 							String aux = msg1.getContent().substring(1, msg1.getContent().length() - 2);
 
 							String aux2[] = aux.split(",\\s+");
@@ -143,7 +143,6 @@ public class agenteTipoElectre extends Agent {
 			calcularMatrizDecisionNormalizada();
 			//showSolucionElectre();
 			calcularMatrizDecisionPonderada();
-			//System.out.println("\nMatriz Ponderada\n");
 			//showSolucionElectre();
 
 			calcularConjuntoConcordanciaDiscordancia();

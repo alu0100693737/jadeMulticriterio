@@ -19,7 +19,7 @@ public class agenteTipoPromethee extends Agent {
 	private ArrayList<ArrayList<Float>> matrizIndicesPreferencia;
 	private ArrayList<Float> prioridadesFinal;
 	
-	public final float precision = 0.20f; //Precision acercamiento consenso, cuanto más bajo mayor consenso
+	public final float precision = 0.05f; //Precision acercamiento consenso, cuanto más bajo mayor consenso
 
 	protected void setup() { 
 		//System.out.println("Creando el agente");
@@ -44,7 +44,7 @@ public class agenteTipoPromethee extends Agent {
 
 						ACLMessage msg1 = receive();
 						if(msg1 != null) {
-							System.out.println("\nRecibida negociacion " + msg1.getContent());
+							//System.out.println("\nRecibida negociacion " + msg1.getContent());
 							String aux = msg1.getContent().substring(1, msg1.getContent().length() - 2);
 
 							String aux2[] = aux.split(",\\s+");

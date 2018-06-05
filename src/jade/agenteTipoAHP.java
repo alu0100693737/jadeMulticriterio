@@ -29,7 +29,7 @@ public class agenteTipoAHP extends Agent {
 
 	private ArrayList<Float> prioridadesFinal;
 
-	public final float precision = 0.20f; //Precision acercamiento consenso, cuanto más bajo mayor consenso
+	public final float precision = 0.2f; //Precision acercamiento consenso, cuanto más bajo mayor consenso
 
 	protected void setup() { 
 		//System.out.println("Creando el agente");
@@ -55,7 +55,7 @@ public class agenteTipoAHP extends Agent {
 
 						ACLMessage msg1 = receive();
 						if(msg1 != null) {
-							System.out.println("Recibida negociacion " + msg1.getContent());
+							//System.out.println("Recibida negociacion " + msg1.getContent());
 							String aux = msg1.getContent().substring(1, msg1.getContent().length() - 2);
 
 							String aux2[] = aux.split(",\\s+");
@@ -121,31 +121,19 @@ public class agenteTipoAHP extends Agent {
 			//System.out.println("Comportamiento Proceso Analitico Jerarquico");
 			//System.out.println("Se calcula la matriz de comparacion por pares");
 			calcularMatrizComparacionPares();
-
 			//showMatrizComparacionPares();
-
 			//System.out.println("Se calcula la matriz normalizada");
 			calcularMatrizComparacionesParesNormalizada();
-
 			//showMatrizComparacionParesNormalizada();
-
 			calcularPrioridades();
 			//showConjuntoPrioridades();
-
 			calcularMatricesAlternativasSegunPrioridades();
-
 			//showMatricesAlternativasSegunPrioridades();
-
 			calcularMatricesAlternativasSegunPrioridadesNormalizada();
-
 			//showMatricesAlternativasSegunPrioridadesNormalizada();
-
 			calcularConjuntoMatrizPrioridadesAlternativas();
-
 			//showConjuntoMatrizPrioridadAlternativas();
-
 			calcularPrioridadFinal();
-
 			//showPrioridadesFinal();
 
 			ACLMessage msg= new ACLMessage(ACLMessage.INFORM);
@@ -283,7 +271,7 @@ public class agenteTipoAHP extends Agent {
 					for(int j = 0; j < getDatosProblema().getNumCriterios(); j++) {
 						if( getPosMAx(getImportanciaRelativa().getImportancias(), j) != getPosMAx(nueva, j)) {
 							sepuede = false;
-							System.out.println("NO SE PUEDE; PROHIBIDOOO" + getImportanciaRelativa().getNombre());
+							//System.out.println("NO SE PUEDE; PROHIBIDOOO" + getImportanciaRelativa().getNombre());
 							break;
 						}
 						//System.out.println("Max de j  " + j + " " + getPosMAx(getImportanciaRelativa().getImportancias(), j) + " " + getPosMAx(nueva, j));
