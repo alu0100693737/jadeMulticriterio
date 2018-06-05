@@ -386,12 +386,12 @@ public class agenteModeradorProblemaMulticriterio extends Agent {
 		//Mayoria 2/3
 		if(getConsensoActual() > (2 * NUMERO_AGENTES / 3)) {
 			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria 2/3) del " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. \n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
-			return false;
+			return true;
 		}
 		//Mayoria absoluta
 		else if(getConsensoActual() > (NUMERO_AGENTES / 2)){ //CONSENSO
 			JOptionPane.showMessageDialog(null, "Se ha encontrado un consenso (Mayoria Absoluta) del " +  (getConsensoActual() / (float)NUMERO_AGENTES) + "%. \n Solucion " + getdecisionFinal() + " con numero: " + (getMax(getdecisionFinal()).getX()));
-			return false;
+			return true;
 		} 
 		//Regla de la minoría 2/3. Mitad de expertos de forma aleatoria
 		else if((aux = aplicarMinoria()) > (2 * NUMERO_AGENTES / 4 * 3)) {
